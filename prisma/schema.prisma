@@ -1,0 +1,441 @@
+// TimeTracker - Prisma Schema
+// Zeiterfassungs- und Urlaubsplanungs-Software
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// ENUMS
+// ============================================
+
+enum Role {
+  ADMIN       // Vollzugriff: User-Verwaltung, Korrekturen, Konfiguration
+  SUPERVISOR  // Kann Urlaubsanträge seines Teams genehmigen
+  USER        // Standard: Stempeln, eigene Anträge, eigene Statistiken
+}
+
+enum TimeEntryType {
+  CLOCK_IN    // Arbeitsbeginn
+  CLOCK_OUT   // Arbeitsende
+  BREAK_START // Pausenbeginn
+  BREAK_END   // Pausenende
+}
+
+enum LeaveStatus {
+  PENDING   // Wartend auf Genehmigung
+  APPROVED  // Genehmigt
+  REJECTED  // Abgelehnt
+  CANCELLED // Vom User storniert
+}
+
+enum LeaveType {
+  VACATION        // Erholungsurlaub
+  SICK            // Krankheit
+  SPECIAL         // Sonderurlaub (Hochzeit, Umzug, etc.)
+  UNPAID          // Unbezahlter Urlaub
+  COMPENSATORY    // Überstundenausgleich
+  PARENTAL        // Elternzeit
+  OTHER           // Sonstiges
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  APPROVE
+  REJECT
+  CORRECT      // Manuelle Zeitkorrektur
+}
+
+enum CorrectionStatus {
+  PENDING    // Wartet auf Prüfung
+  APPROVED   // Genehmigt
+  REJECTED   // Abgelehnt
+}
+
+// ============================================
+// CORE ENTITIES
+// ============================================
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  passwordHash      String
+  firstName         String
+  lastName          String
+  employeeNumber    String?   @unique // Personalnummer
+  profileImage      String?   // URL zum Profilbild
+  isActive          Boolean   @default(true)
+  role              Role      @default(USER)
+  
+  // Arbeitszeitmodell
+  workTimeModelId   String?
+  workTimeModel     WorkTimeModel? @relation(fields: [workTimeModelId], references: [id])
+  
+  // Abteilung
+  departmentId      String?
+  department        Department? @relation("DepartmentMembers", fields: [departmentId], references: [id])
+ 
+  // Vorgesetzter (Self-Relation)
+  supervisorId      String?
+  supervisor        User?     @relation("SupervisorSubordinates", fields: [supervisorId], references: [id])
+  subordinates      User[]    @relation("SupervisorSubordinates")
+  
+  // Vertreter / Delegation (z.B. bei Abwesenheit des Vorgesetzten)
+  delegateId        String?
+  delegate          User?     @relation("UserDelegate", fields: [delegateId], references: [id])
+  delegatedUsers    User[]    @relation("UserDelegate")
+  
+  // Jahresurlaub (individuell, falls abweichend vom Standard)
+  annualLeaveEntitlement Int   @default(30) // Urlaubstage pro Jahr
+  carryOverDays     Int       @default(0)   // Resturlaub aus Vorjahr
+  
+  // Timestamps
+  hireDate          DateTime  @default(now())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relations
+  timeEntries       TimeEntry[]
+  leaveRequests     LeaveRequest[]       @relation("UserLeaveRequests")
+  approvedRequests  LeaveRequest[]       @relation("ApproverLeaveRequests")
+  auditLogs         AuditLog[]           @relation("AuditUser")
+  auditLogsPerformed AuditLog[]          @relation("AuditPerformedBy")
+  managedDepartments Department[]        @relation("DepartmentHead")
+  timeCorrectionRequests TimeCorrectionRequest[] @relation("TimeCorrectionUser")
+  timeCorrectionsApproved TimeCorrectionRequest[] @relation("TimeCorrectionApprover")
+  
+  @@index([email])
+  @@index([supervisorId])
+  @@index([departmentId])
+  @@map("users")
+}
+
+model Department {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  color       String?  // Für Kalender-Visualisierung (Hex-Code)
+  
+  // Abteilungsleiter
+  headId      String?
+  head        User?    @relation("DepartmentHead", fields: [headId], references: [id])
+  
+  // Mitglieder
+  members     User[]   @relation("DepartmentMembers")
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("departments")
+}
+
+model WorkTimeModel {
+  id              String   @id @default(cuid())
+  name            String   // z.B. "Vollzeit 40h", "Teilzeit 20h", "Gleitzeit"
+  description     String?
+  
+  // Wöchentliche Soll-Stunden pro Tag (in Minuten für Präzision)
+  mondayMinutes   Int      @default(480)  // 8h = 480min
+  tuesdayMinutes  Int      @default(480)
+  wednesdayMinutes Int     @default(480)
+  thursdayMinutes Int      @default(480)
+  fridayMinutes   Int      @default(480)
+  saturdayMinutes Int      @default(0)
+  sundayMinutes   Int      @default(0)
+  
+  // Kernarbeitszeit (optional)
+  coreTimeStart   String?  // z.B. "09:00"
+  coreTimeEnd     String?  // z.B. "15:00"
+  
+  // Pausen-Einstellungen
+  breakMinutesPerDay    Int @default(30)      // Mindestpause
+  breakAfterMinutes     Int @default(360)     // Pause nach X Minuten Arbeit (6h)
+  
+  isDefault       Boolean  @default(false)
+  isActive        Boolean  @default(true)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  users           User[]
+  
+  @@map("work_time_models")
+}
+
+// ============================================
+// TIME TRACKING
+// ============================================
+
+model TimeEntry {
+  id            String        @id @default(cuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type          TimeEntryType
+  timestamp     DateTime      @default(now())
+  
+  // Für manuelle Korrekturen
+  isManual      Boolean       @default(false)
+  correctedById String?       // Wer hat korrigiert?
+  correctionNote String?      // Begründung der Korrektur
+  originalTimestamp DateTime? // Original-Wert vor Korrektur
+  
+  // Geo-Location (optional für mobile Nutzung)
+  latitude      Float?
+  longitude     Float?
+  
+  // Zusätzliche Infos
+  note          String?       // Kommentar zum Eintrag
+  ipAddress     String?       // Für Audit-Zwecke
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  timeCorrectionRequests TimeCorrectionRequest[]
+  
+  @@index([userId, timestamp])
+  @@index([userId, type])
+  @@map("time_entries")
+}
+
+// Berechnete Tageszusammenfassung (für Performance)
+model DailyWorkSummary {
+  id              String   @id @default(cuid())
+  userId          String
+  date            DateTime @db.Date
+  
+  // Berechnete Werte (in Minuten)
+  workedMinutes   Int      @default(0)
+  breakMinutes    Int      @default(0)
+  targetMinutes   Int      @default(0)  // Soll-Arbeitszeit
+  deltaMinutes    Int      @default(0)  // Differenz (Plus/Minus)
+  
+  // Status
+  isHoliday       Boolean  @default(false)
+  isWeekend       Boolean  @default(false)
+  isLeaveDay      Boolean  @default(false)
+  leaveType       LeaveType?
+  
+  // Erster/Letzter Stempel des Tages
+  firstClockIn    DateTime?
+  lastClockOut    DateTime?
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("daily_work_summaries")
+}
+
+// ============================================
+// LEAVE MANAGEMENT
+// ============================================
+
+model LeaveRequest {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation("UserLeaveRequests", fields: [userId], references: [id], onDelete: Cascade)
+  
+  type          LeaveType
+  status        LeaveStatus @default(PENDING)
+  
+  startDate     DateTime    @db.Date
+  endDate       DateTime    @db.Date
+  
+  // Halbe Tage
+  isHalfDayStart Boolean    @default(false)  // Nur halber Tag am Startdatum
+  isHalfDayEnd   Boolean    @default(false)  // Nur halber Tag am Enddatum
+  
+  // Berechnung
+  totalDays     Float       // Gesamte beantragte Tage (inkl. halbe Tage)
+  
+  // Begründung/Bemerkungen
+  reason        String?
+  
+  // Genehmigung
+  approverId    String?
+  approver      User?       @relation("ApproverLeaveRequests", fields: [approverId], references: [id])
+  approvedAt    DateTime?
+  rejectionReason String?
+  
+  // Dokumentation (z.B. Krankenschein)
+  documentUrl   String?
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  @@index([userId, startDate])
+  @@index([status])
+  @@index([approverId])
+  @@map("leave_requests")
+}
+
+// Jährlicher Urlaubsanspruch-Tracker
+model LeaveBalance {
+  id              String   @id @default(cuid())
+  userId          String
+  year            Int
+  
+  // Anspruch
+  entitlement     Float    // Jahresanspruch
+  carryOver       Float    @default(0)  // Übertrag aus Vorjahr
+  
+  // Verbraucht
+  used            Float    @default(0)
+  pending         Float    @default(0)  // Beantragt, aber noch nicht genehmigt
+  
+  // Berechnet
+  remaining       Float    // Verbleibend
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@unique([userId, year])
+  @@map("leave_balances")
+}
+
+// ============================================
+// HOLIDAYS
+// ============================================
+
+model Holiday {
+  id          String   @id @default(cuid())
+  name        String   // z.B. "Weihnachten", "Tag der Deutschen Einheit"
+  date        DateTime @db.Date
+  year        Int      // Jahr für einfachere Abfragen
+  
+  // Regional (für Deutschland: Bundesland-spezifische Feiertage)
+  region      String   @default("ALL") // z.B. "DE-BY" für Bayern, "ALL" = bundesweit
+  
+  // Wiederkehrend (für Berechnung in Folgejahren)
+  isRecurring Boolean  @default(false)
+  
+  // Halber Arbeitstag (z.B. Heiligabend in manchen Firmen)
+  isHalfDay   Boolean  @default(false)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@unique([date, region])
+  @@index([date])
+  @@index([year, region])
+  @@map("holidays")
+}
+
+// ============================================
+// AUDIT & LOGGING
+// ============================================
+
+model AuditLog {
+  id            String      @id @default(cuid())
+  
+  // Wer wurde geändert?
+  userId        String?
+  user          User?       @relation("AuditUser", fields: [userId], references: [id])
+  
+  // Wer hat geändert?
+  performedById String
+  performedBy   User        @relation("AuditPerformedBy", fields: [performedById], references: [id])
+  
+  action        AuditAction
+  entityType    String      // z.B. "TimeEntry", "LeaveRequest", "User"
+  entityId      String      // ID des geänderten Objekts
+  
+  // Änderungen im Detail
+  oldValues     Json?       // Vorherige Werte
+  newValues     Json?       // Neue Werte
+  
+  // Zusätzliche Infos
+  description   String?     // Menschenlesbare Beschreibung
+  ipAddress     String?
+  userAgent     String?
+  
+  createdAt     DateTime    @default(now())
+  
+  @@index([userId])
+  @@index([performedById])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+// ============================================
+// SYSTEM SETTINGS
+// ============================================
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("system_settings")
+}
+
+// ============================================
+// TIME CORRECTION REQUESTS
+// ============================================
+
+model TimeCorrectionRequest {
+  id            String           @id @default(cuid())
+
+  // Antragsteller
+  userId        String
+  user          User             @relation("TimeCorrectionUser", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Optional bestehender Eintrag, der korrigiert werden soll
+  timeEntryId   String?
+  timeEntry     TimeEntry?       @relation(fields: [timeEntryId], references: [id], onDelete: Cascade)
+
+  // Gewünschter neuer Zeitstempel / Typ
+  requestedType      TimeEntryType
+  requestedTimestamp DateTime      @db.Timestamp(6)
+  requestedNote      String?
+
+  // Begründung
+  reason        String
+
+  // Workflow
+  status        CorrectionStatus  @default(PENDING)
+  approverId    String?
+  approver      User?            @relation("TimeCorrectionApprover", fields: [approverId], references: [id])
+  approvedAt    DateTime?
+  rejectionReason String?
+
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("time_correction_requests")
+}
+
+// Session für NextAuth (falls DB-Adapter verwendet wird)
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
