@@ -251,7 +251,8 @@ Feel free to open an issue or a pull request if you find bugs or want to add fea
 
 ## 📄 License
 
-MIT License – see [LICENSE](LICENSE)
+This project is licensed under the **GNU General Public License v3.0 (GPL‑3.0)**.  
+See [`LICENSE`](LICENSE) for the full license text.
 
 ---
 
