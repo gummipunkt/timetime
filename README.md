@@ -1,6 +1,8 @@
 # TimeTracker
 
-Eine selbst hostbare Zeiterfassungs- und Urlaubsplanungs-Software für Unternehmen.
+Self‑hosted time tracking and leave management for small and mid‑sized companies.
+
+Readme was generated with Cursor. Thanks.
 
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
@@ -10,243 +12,247 @@ Eine selbst hostbare Zeiterfassungs- und Urlaubsplanungs-Software für Unternehm
 
 ## 🚀 Features
 
-### Zeiterfassung
-- ⏱️ Echtzeit-Stempeln (Kommen/Gehen/Pause)
-- 📊 Live-Berechnung der Arbeitszeit
-- 📈 Automatische Gleitzeit-Saldo Berechnung
-- 🗓️ Automatische Feiertags-Berücksichtigung
+### Time tracking
+- ⏱️ Clock in / clock out / breaks
+- 📊 Live calculation of daily working time
+- 📈 Automatic flex time balance
+- 🗓️ Automatic public holiday handling (per German state)
 
-### Urlaubsverwaltung
-- 📝 Antragswesen mit Genehmigungsworkflow
-- 📅 Team-Kalender Visualisierung
-- 🧮 Automatische Urlaubstage-Berechnung
-- 📋 Verschiedene Urlaubsarten (Urlaub, Krankheit, Sonderurlaub)
+### Leave management
+- 📝 Request & approval workflow (employee → supervisor / HR / admin)
+- 📅 Team calendar with overlaps and department colors
+- 🧮 Automatic leave day calculation (incl. weekends/holidays handling)
+- 📋 Multiple leave types (vacation, sick, unpaid, special leave, etc.)
 
-### Rollen & Rechte
-- 👑 **Admin**: Vollzugriff, User-Verwaltung, Korrekturen
-- 👔 **Supervisor**: Team-Übersicht, Genehmigung von Anträgen
-- 👤 **User**: Eigene Zeiterfassung und Anträge
+### Roles & permissions
+- 👑 **Admin**: Full access, user & department management, manual corrections, reporting
+- 👔 **Supervisor**: Team overview, approval of leave and time correction requests
+- 👤 **User**: Personal time tracking, leave requests, personal reports
 
-### Reporting
-- 📊 Monats- und Jahresübersichten
-- 📝 Audit-Log für alle Änderungen
-- 📈 Statistiken und Auswertungen
+### Reporting & audit
+- 📊 Monthly and yearly overviews per employee
+- 📁 CSV export of monthly timesheets (admin)
+- 📝 Audit log for administrative changes
 
-## 🛠️ Tech Stack
+## 🛠️ Tech stack
 
 - **Framework**: Next.js 14 (App Router)
-- **Sprache**: TypeScript
-- **Datenbank**: PostgreSQL
+- **Language**: TypeScript
+- **Database**: PostgreSQL
 - **ORM**: Prisma
-- **UI**: Tailwind CSS + Shadcn/UI
-- **Auth**: NextAuth.js
+- **UI**: Tailwind CSS + shadcn/ui
+- **Auth**: NextAuth.js (credentials)
 - **Deployment**: Docker & Docker Compose
 
-## 📦 Installation
+## 📦 Local development
 
-### Voraussetzungen
+### Requirements
 
 - Node.js 20+
-- PostgreSQL 16+ (oder Docker)
-- pnpm/npm/yarn
+- PostgreSQL 16+ (or Docker)
+- npm / pnpm / yarn
 
-### Lokale Entwicklung
+### Setup
 
-1. **Repository klonen**
+1. **Clone the repository**
    ```bash
    git clone https://github.com/your-repo/timetracker.git
    cd timetracker
    ```
 
-2. **Dependencies installieren**
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-3. **Umgebungsvariablen konfigurieren**
+3. **Configure environment variables**
    ```bash
    cp .env.example .env.local
-   # Dann .env.local anpassen
+   # then adjust .env.local (DATABASE_URL, NEXTAUTH_SECRET, etc.)
    ```
 
-4. **Datenbank starten (mit Docker)**
+4. **Start a local PostgreSQL via Docker (optional)**
    ```bash
    docker run -d \
      --name timetracker-db \
      -e POSTGRES_USER=timetracker \
-     -e POSTGRES_PASSWORD=timetracker \
+     -e POSTGRES_PASSWORD=timetracker_secure_password \
      -e POSTGRES_DB=timetracker \
      -p 5432:5432 \
      postgres:16-alpine
    ```
 
-5. **Datenbank-Schema erstellen**
+5. **Apply the database schema**
    ```bash
-   npm run db:migrate
+   npm run db:push
    ```
 
-6. **Testdaten laden (optional)**
+6. **Seed demo data**
    ```bash
    npm run db:seed
    ```
 
-7. **Entwicklungsserver starten**
+7. **Start the dev server**
    ```bash
    npm run dev
    ```
 
-8. **Öffnen**: http://localhost:3000
+8. **Open the app**  
+   `http://localhost:3000`
 
-### 🐳 Docker Deployment
+## 🐳 Docker deployment
 
-1. **Umgebungsvariablen erstellen**
+1. **Create `.env` for production**
    ```bash
    cp .env.example .env
-   # Anpassen: NEXTAUTH_SECRET, POSTGRES_PASSWORD, etc.
+   # adjust: NEXTAUTH_SECRET (32+ chars), POSTGRES_PASSWORD, NEXTAUTH_URL, etc.
    ```
 
-2. **Container starten**
+2. **Start services**
    ```bash
-   docker-compose up -d
+   docker compose up -d
    ```
 
-3. **Datenbank initialisieren**
+3. **Run migrations + seed (one‑time setup)**
    ```bash
-   docker-compose --profile setup run migrate
+   docker compose --profile setup run migrate
    ```
 
-4. **Öffnen**: http://localhost:3000
+4. **Open the app**  
+   `http://localhost:3000` (or behind your reverse proxy, e.g. `https://timetime.ecow.dev`)
 
-## 🔐 Demo-Zugangsdaten
+## 🔐 Demo users
 
-Nach `npm run db:seed` stehen folgende Testaccounts zur Verfügung:
+After running `npm run db:seed` you get the following demo accounts:
 
 ### Management & HR
 
-| Rolle       | Beschreibung        | E-Mail                    | Passwort |
-|------------|---------------------|---------------------------|----------|
-| Admin (CEO) | Geschäftsführung    | `ceo@timetracker.local`   | `admin123` |
-| Admin (HR)  | HR / Personal       | `hr@timetracker.local`    | `admin123` |
+| Role        | Description   | Email                     | Password   |
+|------------|---------------|---------------------------|------------|
+| Admin (CEO) | Management    | `ceo@timetracker.local`   | `admin123` |
+| Admin (HR)  | HR / People   | `hr@timetracker.local`    | `admin123` |
 
-### Abteilung Entwicklung
+### Development department
 
-| Rolle        | Beschreibung               | E-Mail                       | Passwort |
-|-------------|----------------------------|------------------------------|----------|
-| Supervisor  | Leitung Entwicklung        | `lead.dev@timetracker.local` | `user123` |
-| User (VZ)   | Entwickler Vollzeit        | `anna.dev@timetracker.local` | `user123` |
-| User (TZ)   | Entwickler Teilzeit        | `ben.dev@timetracker.local`  | `user123` |
-| User (TZ)   | Entwickler Teilzeit        | `cora.dev@timetracker.local` | `user123` |
+| Role        | Description                  | Email                        | Password |
+|-------------|------------------------------|------------------------------|----------|
+| Supervisor  | Head of Development          | `lead.dev@timetracker.local` | `user123` |
+| User (FT)   | Developer full‑time          | `anna.dev@timetracker.local` | `user123` |
+| User (PT)   | Developer part‑time          | `ben.dev@timetracker.local`  | `user123` |
+| User (PT)   | Developer part‑time          | `cora.dev@timetracker.local` | `user123` |
 
-### Abteilung Vertrieb
+### Sales department
 
-| Rolle        | Beschreibung               | E-Mail                         | Passwort |
-|-------------|----------------------------|--------------------------------|----------|
-| Supervisor  | Leitung Vertrieb           | `lead.sales@timetracker.local` | `user123` |
-| User (VZ)   | Vertrieb Vollzeit          | `david.sales@timetracker.local`| `user123` |
-| User (TZ)   | Vertrieb Teilzeit          | `eva.sales@timetracker.local`  | `user123` |
-| User (TZ)   | Vertrieb Teilzeit          | `finn.sales@timetracker.local` | `user123` |
+| Role        | Description                  | Email                          | Password |
+|-------------|------------------------------|---------------------------------|----------|
+| Supervisor  | Head of Sales                | `lead.sales@timetracker.local` | `user123` |
+| User (FT)   | Sales full‑time              | `david.sales@timetracker.local`| `user123` |
+| User (PT)   | Sales part‑time              | `eva.sales@timetracker.local`  | `user123` |
+| User (PT)   | Sales part‑time              | `finn.sales@timetracker.local` | `user123` |
 
-**Hinweise zu den Demo-Daten:**
+**Demo data notes:**
 
-- Alle Benutzer haben beispielhafte Urlaubsanträge (genehmigt und noch offen) sowie Stempelzeiten der letzten Tage.
-- Die Supervisor*innen können Urlaubs- und Zeitkorrektur-Anträge ihres Teams (und – über Vertretungsregeln – der jeweils delegierten Mitarbeitenden) genehmigen.
-- Die Admins (CEO/HR) haben Vollzugriff auf alle Bereiche, inkl. Reporting-Export (CSV) unter `Berichte` → **Export (CSV)**.
+- All users have sample time entries for the last weeks and a mix of pending and approved leave requests in the **current year**.
+- Supervisors can approve **leave requests** and **time correction requests** for their team members (and for delegated users via the delegation rules).
+- Admins (CEO/HR) have full access, including CSV export under `Reports` → **Export (CSV)**.
 
-## 📁 Projektstruktur
+## 📁 Project structure
 
-```
+```text
 timetracker/
 ├── prisma/
-│   ├── schema.prisma      # Datenbankschema
-│   └── seed.ts            # Testdaten
+│   ├── schema.prisma      # Database schema
+│   └── seed.ts            # Demo data seeding
 ├── src/
 │   ├── app/               # Next.js App Router
-│   │   ├── (auth)/        # Auth-Routen (Login)
-│   │   ├── (dashboard)/   # Dashboard-Routen
-│   │   └── api/           # API-Routen
-│   ├── components/        # React-Komponenten
-│   │   ├── ui/            # Shadcn/UI Komponenten
-│   │   ├── layout/        # Layout-Komponenten
-│   │   ├── time/          # Zeiterfassungs-Komponenten
-│   │   └── leave/         # Urlaubs-Komponenten
-│   ├── lib/               # Utilities
-│   ├── hooks/             # React Hooks
-│   └── types/             # TypeScript Types
-├── docker-compose.yml     # Docker Compose Config
-├── Dockerfile             # Production Dockerfile
+│   │   ├── (auth)/        # Auth routes (login)
+│   │   ├── (dashboard)/   # Dashboard routes
+│   │   └── api/           # API routes
+│   ├── components/        # React components
+│   │   ├── ui/            # shadcn/ui components
+│   │   ├── layout/        # Layout components
+│   │   ├── time/          # Time tracking components
+│   │   └── leave/         # Leave management components
+│   ├── lib/               # Services, utilities (auth, time, leave, admin)
+│   ├── hooks/             # React hooks
+│   └── types/             # TypeScript types
+├── docker-compose.yml     # Docker Compose configuration
+├── Dockerfile             # Production Dockerfile (standalone Next.js)
 └── README.md
 ```
 
-## 🔧 Konfiguration
+## 🔧 Configuration
 
-### Umgebungsvariablen
+### Environment variables
 
-| Variable | Beschreibung | Standard |
-|----------|--------------|----------|
-| `DATABASE_URL` | PostgreSQL Connection String | - |
-| `NEXTAUTH_SECRET` | Secret für NextAuth | - |
-| `NEXTAUTH_URL` | App URL | http://localhost:3000 |
-| `TZ` | Zeitzone | Europe/Berlin |
-| `DEFAULT_REGION` | Bundesland für Feiertage | DE-BY |
+| Variable          | Description                         | Default                 |
+|-------------------|-------------------------------------|-------------------------|
+| `DATABASE_URL`    | PostgreSQL connection string        | –                       |
+| `NEXTAUTH_SECRET` | Secret for NextAuth                 | –                       |
+| `NEXTAUTH_URL`    | Public app URL                      | `http://localhost:3000` |
+| `TZ`              | Time zone                           | `Europe/Berlin`         |
+| `DEFAULT_REGION`  | Default region for holidays (DE-XX) | `DE-BY`                 |
+| `DEFAULT_ANNUAL_LEAVE_DAYS` | Default leave entitlement | `30`                    |
 
-### Feiertage
+### Holidays (Germany)
 
-Unterstützte Bundesländer für automatische Feiertagsberechnung:
-- DE-BW (Baden-Württemberg)
-- DE-BY (Bayern)
-- DE-BE (Berlin)
-- DE-BB (Brandenburg)
-- DE-HB (Bremen)
-- DE-HH (Hamburg)
-- DE-HE (Hessen)
-- DE-MV (Mecklenburg-Vorpommern)
-- DE-NI (Niedersachsen)
-- DE-NW (Nordrhein-Westfalen)
-- DE-RP (Rheinland-Pfalz)
-- DE-SL (Saarland)
-- DE-SN (Sachsen)
-- DE-ST (Sachsen-Anhalt)
-- DE-SH (Schleswig-Holstein)
-- DE-TH (Thüringen)
+Supported federal states (ISO 3166‑2 codes) for automatic holiday calculation:
 
-## 📝 API-Dokumentation
+- DE-BW, DE-BY, DE-BE, DE-BB, DE-HB, DE-HH, DE-HE,
+- DE-MV, DE-NI, DE-NW, DE-RP, DE-SL, DE-SN, DE-ST, DE-SH, DE-TH
 
-### Health Check
-```
+## 📝 API overview (selected)
+
+### Health check
+
+```http
 GET /api/health
 ```
 
-### Auth
-```
-POST /api/auth/signin   # Login
-POST /api/auth/signout  # Logout
-GET  /api/auth/session  # Session abrufen
-```
+### Auth (NextAuth)
 
-### Time Tracking (geplant)
-```
-POST /api/time/clock    # Ein-/Ausstempeln
-GET  /api/time/today    # Heutige Einträge
-GET  /api/time/summary  # Zusammenfassung
+```http
+POST /api/auth/signin    # login
+POST /api/auth/signout   # logout
+GET  /api/auth/session   # current session
 ```
 
-### Leave Management (geplant)
+### Time tracking
+
+```http
+POST /api/time/clock           # clock in/out, start/end break
+GET  /api/time/status          # today's status (entries, totals, flex)
+GET  /api/time/summary         # monthly daily summaries
+GET  /api/time/entries         # raw time entries for a period
+GET  /api/time/corrections     # own correction requests
+GET  /api/time/corrections/pending     # pending corrections for supervisor/admin
+POST /api/time/corrections     # create correction request
+POST /api/time/corrections/:id/approve # approve correction
+POST /api/time/corrections/:id/reject  # reject correction
 ```
-GET  /api/leave                # Eigene Anträge
-POST /api/leave                # Neuer Antrag
-GET  /api/leave/:id            # Antrag Details
-POST /api/leave/:id/approve    # Genehmigen (Supervisor)
-POST /api/leave/:id/reject     # Ablehnen (Supervisor)
+
+### Leave management
+
+```http
+GET  /api/leave                # own leave requests
+POST /api/leave                # create leave request
+GET  /api/leave/:id            # request details
+POST /api/leave/:id/approve    # approve (supervisor/admin)
+POST /api/leave/:id/reject     # reject (supervisor/admin)
+GET  /api/leave/balance        # current leave balance
+GET  /api/leave/calendar       # team calendar
+GET  /api/leave/pending        # pending approvals for supervisor/admin
 ```
 
-## 🤝 Beitragen
+## 🤝 Contributing
 
-Contributions sind willkommen! Bitte erstellen Sie einen Issue oder Pull Request.
+Contributions are welcome!  
+Feel free to open an issue or a pull request if you find bugs or want to add features.
 
-## 📄 Lizenz
+## 📄 License
 
-MIT License - siehe [LICENSE](LICENSE)
+MIT License – see [LICENSE](LICENSE)
 
 ---
 
-Entwickelt mit ❤️ für moderne Zeiterfassung
+Built with ❤️ for modern, transparent time tracking.
