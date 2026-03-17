@@ -1,4 +1,4 @@
-import { PrismaClient, Role, LeaveType, LeaveStatus, TimeEntryType } from "@prisma/client";
+import { PrismaClient, Role, LeaveType, LeaveStatus, TimeEntryType, AuditAction } from "@prisma/client";
 import { hash } from "bcryptjs";
 import { setHours, setMinutes, eachDayOfInterval, isWeekend, subDays } from "date-fns";
 import { TimeService } from "../src/lib/services/time.service";
@@ -455,7 +455,7 @@ async function main() {
 
   for (let i = 0; i < leaveRequests.length; i++) {
     const lr = leaveRequests[i];
-    await prisma.leaveRequest.upsert({
+    const created = await prisma.leaveRequest.upsert({
       where: { id: `leave-${i + 1}` },
       update: {},
       create: {
@@ -471,6 +471,35 @@ async function main() {
         approvedAt: lr.approverId ? new Date() : null,
       },
     });
+
+    // Example audit logs + notifications for approved/rejected requests
+    if (lr.approverId && lr.status === LeaveStatus.APPROVED) {
+      await prisma.auditLog.create({
+        data: {
+          userId: lr.userId,
+          performedById: lr.approverId,
+          action: AuditAction.APPROVE,
+          entityType: "LEAVE_REQUEST",
+          entityId: created.id,
+          description: `Seed: leave request ${created.id} approved`,
+          oldValues: { status: LeaveStatus.PENDING },
+          newValues: { status: LeaveStatus.APPROVED },
+        },
+      });
+
+      await (prisma as any).notification.create({
+        data: {
+          userId: lr.userId,
+          entityType: "LEAVE_REQUEST",
+          entityId: created.id,
+          type: "LEAVE_REQUEST",
+          action: AuditAction.APPROVE,
+          title: "Urlaubsantrag genehmigt (Demo)",
+          message: "Dieser Antrag wurde im Seed als genehmigt markiert.",
+          link: "/leave",
+        },
+      });
+    }
   }
 
   // ============================================
