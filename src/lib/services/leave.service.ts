@@ -385,13 +385,10 @@ export class LeaveService {
     if (approver.role === Role.SUPERVISOR) {
       const user = await prisma.user.findUnique({
         where: { id: userId },
-        select: {
-          supervisorId: true,
-          delegateId: true,
-        },
       });
 
-      if (user?.supervisorId === approverId || user?.delegateId === approverId) {
+      const u = user as any;
+      if (u?.supervisorId === approverId || u?.delegateId === approverId) {
         return true;
       }
     }

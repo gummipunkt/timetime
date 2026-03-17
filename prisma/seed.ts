@@ -304,11 +304,11 @@ async function main() {
   });
 
   // Vertretung: Lead Dev vertritt Lead Sales, Lead Sales vertritt Lead Dev
-  await prisma.user.update({
+  await (prisma as any).user.update({
     where: { id: leadDev.id },
     data: { delegateId: leadSales.id },
   });
-  await prisma.user.update({
+  await (prisma as any).user.update({
     where: { id: leadSales.id },
     data: { delegateId: leadDev.id },
   });

@@ -1,11 +1,13 @@
 import { prisma } from "@/lib/prisma";
-import {
-  CorrectionStatus,
-  TimeEntryType,
-  Role,
-} from "@prisma/client";
+import { TimeEntryType, Role } from "@prisma/client";
 import { startOfDay, endOfDay } from "date-fns";
 import { TimeService } from "./time.service";
+
+const CorrectionStatus = {
+  PENDING: "PENDING",
+  APPROVED: "APPROVED",
+  REJECTED: "REJECTED",
+} as const;
 
 export interface CreateTimeCorrectionRequestInput {
   userId: string;
@@ -37,7 +39,7 @@ export class TimeCorrectionService {
       }
     }
 
-    const request = await prisma.timeCorrectionRequest.create({
+    const request = await (prisma as any).timeCorrectionRequest.create({
       data: {
         userId: input.userId,
         timeEntryId: input.timeEntryId,
@@ -67,7 +69,7 @@ export class TimeCorrectionService {
    * Holt Korrekturanträge eines Users
    */
   static async getUserRequests(userId: string) {
-    const requests = await prisma.timeCorrectionRequest.findMany({
+    const requests = await (prisma as any).timeCorrectionRequest.findMany({
       where: { userId },
       orderBy: { createdAt: "desc" },
       include: {
@@ -112,7 +114,7 @@ export class TimeCorrectionService {
       return [];
     }
 
-    const requests = await prisma.timeCorrectionRequest.findMany({
+    const requests = await (prisma as any).timeCorrectionRequest.findMany({
       where: baseWhere,
       orderBy: { createdAt: "asc" },
       include: {
@@ -135,7 +137,7 @@ export class TimeCorrectionService {
    * Genehmigt einen Korrekturantrag und führt die Korrektur durch
    */
   static async approveRequest(requestId: string, approverId: string) {
-    const request = await prisma.timeCorrectionRequest.findUnique({
+    const request = await (prisma as any).timeCorrectionRequest.findUnique({
       where: { id: requestId },
       include: {
         user: true,
@@ -203,7 +205,7 @@ export class TimeCorrectionService {
       request.requestedTimestamp
     );
 
-    const updated = await prisma.timeCorrectionRequest.update({
+    const updated = await (prisma as any).timeCorrectionRequest.update({
       where: { id: requestId },
       data: {
         status: CorrectionStatus.APPROVED,
@@ -223,7 +225,7 @@ export class TimeCorrectionService {
     approverId: string,
     rejectionReason: string
   ) {
-    const request = await prisma.timeCorrectionRequest.findUnique({
+    const request = await (prisma as any).timeCorrectionRequest.findUnique({
       where: { id: requestId },
       include: { user: true },
     });
@@ -253,7 +255,7 @@ export class TimeCorrectionService {
       throw new Error("Sie sind nicht berechtigt, diesen Antrag abzulehnen.");
     }
 
-    const updated = await prisma.timeCorrectionRequest.update({
+    const updated = await (prisma as any).timeCorrectionRequest.update({
       where: { id: requestId },
       data: {
         status: CorrectionStatus.REJECTED,

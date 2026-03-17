@@ -16,7 +16,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "../ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
@@ -236,7 +236,9 @@ export function TodayOverview() {
                 <Input
                   type="datetime-local"
                   value={correctionTimestamp}
-                  onChange={(e) => setCorrectionTimestamp(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setCorrectionTimestamp(e.target.value)
+                  }
                   required
                 />
               </div>
@@ -244,7 +246,9 @@ export function TodayOverview() {
                 <label className="text-sm font-medium">Begründung</label>
                 <Textarea
                   value={correctionReason}
-                  onChange={(e) => setCorrectionReason(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    setCorrectionReason(e.target.value)
+                  }
                   rows={3}
                   placeholder="z.B. Vergessen zu stempeln, falsche Uhrzeit erfasst..."
                   required
