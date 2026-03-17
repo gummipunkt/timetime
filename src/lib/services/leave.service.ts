@@ -267,6 +267,20 @@ export class LeaveService {
       description: `Leave request ${request.id} approved`,
     });
 
+    // Persistent notification (optional)
+    await (prisma as any).notification.create({
+      data: {
+        userId: request.userId,
+        entityType: "LEAVE_REQUEST",
+        entityId: request.id,
+        type: "LEAVE_REQUEST",
+        action: AuditAction.APPROVE,
+        title: "Urlaubsantrag genehmigt",
+        message: `Ihr Urlaubsantrag wurde von Ihrem Vorgesetzten genehmigt.`,
+        link: "/leave",
+      },
+    });
+
     return updated;
   }
 
@@ -336,6 +350,20 @@ export class LeaveService {
       description: `Leave request ${request.id} rejected: ${rejectionReason}`,
     });
 
+    // Persistent notification (optional)
+    await (prisma as any).notification.create({
+      data: {
+        userId: request.userId,
+        entityType: "LEAVE_REQUEST",
+        entityId: request.id,
+        type: "LEAVE_REQUEST",
+        action: AuditAction.REJECT,
+        title: "Urlaubsantrag abgelehnt",
+        message: `Ihr Urlaubsantrag wurde abgelehnt: ${rejectionReason}`,
+        link: "/leave",
+      },
+    });
+
     return updated;
   }
 
@@ -389,6 +417,20 @@ export class LeaveService {
       oldValues: { status: request.status },
       newValues: { status: updated.status },
       description: `Leave request ${request.id} cancelled by user`,
+    });
+
+    // Persistent notification (optional)
+    await (prisma as any).notification.create({
+      data: {
+        userId: request.userId,
+        entityType: "LEAVE_REQUEST",
+        entityId: request.id,
+        type: "LEAVE_REQUEST",
+        action: AuditAction.UPDATE,
+        title: "Urlaubsantrag storniert",
+        message: `Ihr Urlaubsantrag wurde storniert.`,
+        link: "/leave",
+      },
     });
 
     return updated;

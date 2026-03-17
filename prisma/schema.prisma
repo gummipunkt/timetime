@@ -368,6 +368,31 @@ model AuditLog {
 }
 
 // ============================================
+// NOTIFICATIONS (optional persistent storage)
+// ============================================
+
+model Notification {
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  entityType String
+  entityId   String
+  type       String?
+  action     AuditAction
+
+  title      String
+  message    String
+  link       String?
+
+  createdAt  DateTime    @default(now())
+  readAt     DateTime?
+
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+// ============================================
 // SYSTEM SETTINGS
 // ============================================
 

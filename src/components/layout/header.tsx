@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOut, Menu, Settings, User } from "lucide-react";
+import { NotificationCenter } from "@/components/notifications/notification-center";
 
 interface HeaderProps {
   user: {
@@ -37,6 +38,9 @@ export function Header({ user }: HeaderProps) {
 
       {/* Right side actions */}
       <div className="flex items-center gap-2">
+        {/* Notifications */}
+        <NotificationCenter />
+
         {/* User menu */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

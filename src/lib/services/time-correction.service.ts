@@ -225,6 +225,20 @@ export class TimeCorrectionService {
       description: `Time correction ${request.id} approved`,
     });
 
+    // Persistent notification (optional)
+    await (prisma as any).notification.create({
+      data: {
+        userId: request.userId,
+        entityType: "TIME_CORRECTION",
+        entityId: request.id,
+        type: "TIME_CORRECTION",
+        action: AuditAction.APPROVE,
+        title: "Zeitkorrektur genehmigt",
+        message: "Ihr Zeitkorrekturantrag wurde genehmigt.",
+        link: "/team/time-corrections",
+      },
+    });
+
     return updated;
   }
 
@@ -284,6 +298,20 @@ export class TimeCorrectionService {
       entityType: "TIME_CORRECTION",
       entityId: request.id,
       description: `Time correction ${request.id} rejected: ${rejectionReason}`,
+    });
+
+    // Persistent notification (optional)
+    await (prisma as any).notification.create({
+      data: {
+        userId: request.userId,
+        entityType: "TIME_CORRECTION",
+        entityId: request.id,
+        type: "TIME_CORRECTION",
+        action: AuditAction.REJECT,
+        title: "Zeitkorrektur abgelehnt",
+        message: `Ihr Zeitkorrekturantrag wurde abgelehnt: ${rejectionReason}`,
+        link: "/team/time-corrections",
+      },
     });
 
     return updated;

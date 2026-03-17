@@ -32,7 +32,8 @@ Readme was generated with Cursor. Thanks.
 ### Reporting & audit
 - 📊 Monthly and yearly overviews per employee
 - 📁 CSV export of monthly timesheets (admin)
-- 📝 Audit log for administrative changes
+- 📝 Audit log for administrative changes and approval/correction history
+- 🔔 In-app notifications for leave and time-correction approvals/rejections
 
 ## 🛠️ Tech stack
 
@@ -243,6 +244,12 @@ POST /api/leave/:id/reject     # reject (supervisor/admin)
 GET  /api/leave/balance        # current leave balance
 GET  /api/leave/calendar       # team calendar
 GET  /api/leave/pending        # pending approvals for supervisor/admin
+```
+
+### Notifications
+
+```http
+GET  /api/notifications        # latest per-user notifications (derived from AuditLog / Notification)
 ```
 
 ## 🤝 Contributing
