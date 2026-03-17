@@ -111,6 +111,7 @@ model User {
   managedDepartments Department[]        @relation("DepartmentHead")
   timeCorrectionRequests TimeCorrectionRequest[] @relation("TimeCorrectionUser")
   timeCorrectionsApproved TimeCorrectionRequest[] @relation("TimeCorrectionApprover")
+  notifications    Notification[]
   
   @@index([email])
   @@index([supervisorId])
