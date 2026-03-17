@@ -154,7 +154,8 @@ After running `npm run db:seed` you get the following demo accounts:
 
 - All users have sample time entries for the last weeks and a mix of pending and approved leave requests in the **current year**.
 - Supervisors can approve **leave requests** and **time correction requests** for their team members (and for delegated users via the delegation rules).
-- Admins (CEO/HR) have full access, including CSV export under `Reports` → **Export (CSV)**.
+- All approvals/rejections/cancellations of leave and time-correction requests are written to the central **Audit Log** and visible on the `/admin/audit` page.
+- Admins (CEO/HR) have full access, including CSV export under `Reports` → **Export (CSV)** and the full audit history.
 
 ## 📁 Project structure
 

@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { LeaveType, LeaveStatus, Role } from "@prisma/client";
+import { LeaveType, LeaveStatus, Role, AuditAction } from "@prisma/client";
 import {
   startOfDay,
   endOfDay,
@@ -11,6 +11,7 @@ import {
   format,
 } from "date-fns";
 import { TimeService } from "./time.service";
+import { AdminService } from "./admin.service";
 
 // ============================================
 // TYPES
@@ -254,7 +255,17 @@ export class LeaveService {
     // Balance aktualisieren
     await this.updateBalance(request.userId, request.startDate.getFullYear());
 
-    // TODO: E-Mail Benachrichtigung an User senden
+    // Audit log entry
+    await AdminService.createAuditLog({
+      userId: request.userId,
+      performedById: approverId,
+      action: AuditAction.APPROVE,
+      entityType: "LEAVE_REQUEST",
+      entityId: request.id,
+      oldValues: { status: request.status },
+      newValues: { status: updated.status },
+      description: `Leave request ${request.id} approved`,
+    });
 
     return updated;
   }
@@ -313,7 +324,17 @@ export class LeaveService {
     // Balance aktualisieren (pending wieder freigeben)
     await this.updateBalance(request.userId, request.startDate.getFullYear());
 
-    // TODO: E-Mail Benachrichtigung an User senden
+    // Audit log entry
+    await AdminService.createAuditLog({
+      userId: request.userId,
+      performedById: approverId,
+      action: AuditAction.REJECT,
+      entityType: "LEAVE_REQUEST",
+      entityId: request.id,
+      oldValues: { status: request.status },
+      newValues: { status: updated.status },
+      description: `Leave request ${request.id} rejected: ${rejectionReason}`,
+    });
 
     return updated;
   }
@@ -357,6 +378,18 @@ export class LeaveService {
 
     // Balance aktualisieren
     await this.updateBalance(request.userId, request.startDate.getFullYear());
+
+    // Audit log entry (user-initiated cancel)
+    await AdminService.createAuditLog({
+      userId: request.userId,
+      performedById: userId,
+      action: AuditAction.UPDATE,
+      entityType: "LEAVE_REQUEST",
+      entityId: request.id,
+      oldValues: { status: request.status },
+      newValues: { status: updated.status },
+      description: `Leave request ${request.id} cancelled by user`,
+    });
 
     return updated;
   }

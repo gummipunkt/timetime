@@ -1,7 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import { TimeEntryType, Role } from "@prisma/client";
+import { TimeEntryType, Role, AuditAction } from "@prisma/client";
 import { startOfDay, endOfDay } from "date-fns";
 import { TimeService } from "./time.service";
+import { AdminService } from "./admin.service";
 
 const CorrectionStatus = {
   PENDING: "PENDING",
@@ -214,6 +215,16 @@ export class TimeCorrectionService {
       },
     });
 
+    // Audit log entry
+    await AdminService.createAuditLog({
+      userId: request.userId,
+      performedById: approverId,
+      action: AuditAction.APPROVE,
+      entityType: "TIME_CORRECTION",
+      entityId: request.id,
+      description: `Time correction ${request.id} approved`,
+    });
+
     return updated;
   }
 
@@ -263,6 +274,16 @@ export class TimeCorrectionService {
         approvedAt: new Date(),
         rejectionReason,
       },
+    });
+
+    // Audit log entry
+    await AdminService.createAuditLog({
+      userId: request.userId,
+      performedById: approverId,
+      action: AuditAction.REJECT,
+      entityType: "TIME_CORRECTION",
+      entityId: request.id,
+      description: `Time correction ${request.id} rejected: ${rejectionReason}`,
     });
 
     return updated;

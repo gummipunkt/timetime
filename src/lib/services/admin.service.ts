@@ -364,6 +364,7 @@ export class AdminService {
     userId?: string;
     performedById?: string;
     entityType?: string;
+    entityId?: string;
     action?: AuditAction;
     startDate?: Date;
     endDate?: Date;
@@ -382,6 +383,10 @@ export class AdminService {
 
     if (options?.entityType) {
       where.entityType = options.entityType;
+    }
+
+    if (options?.entityId) {
+      where.entityId = options.entityId;
     }
 
     if (options?.action) {

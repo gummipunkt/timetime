@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions, isAdmin } from "@/lib/auth";
+import { authOptions, isSupervisorOrAdmin } from "@/lib/auth";
 import { AdminService } from "@/lib/services/admin.service";
 import { AuditAction } from "@prisma/client";
 
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.id || !isAdmin(session.user.role)) {
+    if (!session?.user?.id || !isSupervisorOrAdmin(session.user.role)) {
       return NextResponse.json(
         { error: "Keine Berechtigung" },
         { status: 403 }
@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get("userId") || undefined;
     const performedById = searchParams.get("performedById") || undefined;
     const entityType = searchParams.get("entityType") || undefined;
+    const entityId = searchParams.get("entityId") || undefined;
     const action = searchParams.get("action") as AuditAction | undefined;
     const startDate = searchParams.get("startDate");
     const endDate = searchParams.get("endDate");
@@ -33,6 +34,7 @@ export async function GET(request: NextRequest) {
       userId,
       performedById,
       entityType,
+      entityId,
       action,
       startDate: startDate ? new Date(startDate) : undefined,
       endDate: endDate ? new Date(endDate) : undefined,

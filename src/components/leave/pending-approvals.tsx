@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePendingApprovals } from "@/hooks/use-leave";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,6 +46,19 @@ export function PendingApprovals() {
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
+  const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+  const [historyLogs, setHistoryLogs] = useState<
+    {
+      id: string;
+      action: string;
+      entityType: string;
+      description: string | null;
+      performedBy: { id: string; name: string };
+      createdAt: string;
+    }[]
+  >([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyError, setHistoryError] = useState<string | null>(null);
 
   const handleApprove = async (id: string) => {
     setProcessingId(id);
@@ -92,6 +105,39 @@ export function PendingApprovals() {
     } finally {
       setProcessingId(null);
       setRejectingId(null);
+    }
+  };
+
+  const openHistory = async (requestId: string) => {
+    setHistoryDialogOpen(true);
+    setHistoryLoading(true);
+    setHistoryError(null);
+    try {
+      const params = new URLSearchParams();
+      params.set("entityType", "LEAVE_REQUEST");
+      params.set("entityId", requestId);
+      params.set("limit", "20");
+      const res = await fetch(`/api/admin/audit?${params.toString()}`);
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || "Historie konnte nicht geladen werden.");
+      }
+      setHistoryLogs(
+        (data.logs || []).map((log: any) => ({
+          id: log.id,
+          action: log.action,
+          entityType: log.entityType,
+          description: log.description,
+          performedBy: log.performedBy,
+          createdAt: log.createdAt,
+        }))
+      );
+    } catch (err) {
+      setHistoryError(
+        err instanceof Error ? err.message : "Historie konnte nicht geladen werden."
+      );
+    } finally {
+      setHistoryLoading(false);
     }
   };
 
@@ -183,6 +229,14 @@ export function PendingApprovals() {
 
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => openHistory(request.id)}
+                    disabled={processingId === request.id}
+                  >
+                    Historie
+                  </Button>
+                  <Button
                     variant="outline"
                     size="sm"
                     className="text-destructive border-destructive hover:bg-destructive/10"
@@ -247,6 +301,70 @@ export function PendingApprovals() {
                 <XCircle className="w-4 h-4 mr-1" />
               )}
               Ablehnen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* History Dialog */}
+      <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Historie des Antrags</DialogTitle>
+            <DialogDescription>
+              Genehmigungen und Ablehnungen dieses Urlaubsantrags.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-3 max-h-64 overflow-y-auto text-sm">
+            {historyLoading && (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+              </div>
+            )}
+            {historyError && !historyLoading && (
+              <div className="text-destructive">{historyError}</div>
+            )}
+            {!historyLoading && !historyError && historyLogs.length === 0 && (
+              <div className="text-muted-foreground">
+                Es sind noch keine Aktionen für diesen Antrag protokolliert.
+              </div>
+            )}
+            {!historyLoading && !historyError && historyLogs.length > 0 && (
+              <ul className="space-y-2">
+                {historyLogs.map((log) => (
+                  <li key={log.id} className="border-b pb-2 last:border-b-0">
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-xs">
+                        {log.action === "APPROVE"
+                          ? "Genehmigt"
+                          : log.action === "REJECT"
+                          ? "Abgelehnt"
+                          : log.action === "UPDATE"
+                          ? "Aktualisiert"
+                          : log.action}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {format(new Date(log.createdAt), "dd.MM.yyyy HH:mm", {
+                          locale: de,
+                        })}
+                      </span>
+                    </div>
+                    {log.description && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {log.description}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Von: <strong>{log.performedBy.name}</strong>
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setHistoryDialogOpen(false)}>
+              Schließen
             </Button>
           </DialogFooter>
         </DialogContent>
