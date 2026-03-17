@@ -7,15 +7,19 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Package files kopieren
+# Systemabhängigkeiten für Prisma / OpenSSL
+RUN apk add --no-cache libc6-compat openssl
+
+# Package- und Projektdateien kopieren
 COPY package.json package-lock.json* ./
+COPY tsconfig.json ./
 COPY prisma ./prisma/
+COPY src ./src/
 
-# Dependencies installieren
-RUN npm ci --only=production
-RUN npm install -D prisma tsx
+# Dependencies inkl. Prisma installieren
+RUN npm ci
 
-# Prisma generate
+# Prisma Client generieren
 RUN npx prisma generate
 
 # Migration und Seed Script
