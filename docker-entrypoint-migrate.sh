@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
 
-echo "🔄 Running database migrations..."
-npx prisma migrate deploy
+echo "🔄 Applying database schema (prisma db push)..."
+npx prisma db push
 
 echo "🌱 Running database seed..."
 npx tsx prisma/seed.ts
