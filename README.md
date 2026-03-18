@@ -4,7 +4,7 @@ Self‑hosted time tracking and leave management for small and mid‑sized compa
 
 Readme was generated with Cursor. Thanks.
 
-![Next.js](https://img.shields.io/badge/Next.js-14-black)
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791)
 ![Prisma](https://img.shields.io/badge/Prisma-5.0-2D3748)
@@ -37,7 +37,7 @@ Readme was generated with Cursor. Thanks.
 
 ## 🛠️ Tech stack
 
-- **Framework**: Next.js 14 (App Router)
+- **Framework**: Next.js 16 (App Router)
 - **Language**: TypeScript
 - **Database**: PostgreSQL
 - **ORM**: Prisma
@@ -204,6 +204,22 @@ Supported federal states (ISO 3166‑2 codes) for automatic holiday calculation:
 - DE-MV, DE-NI, DE-NW, DE-RP, DE-SL, DE-SN, DE-ST, DE-SH, DE-TH
 
 ## 📝 API overview (selected)
+
+## 📚 API Docs (OpenAPI / Swagger)
+
+This project exposes an OpenAPI 3 spec and a Swagger UI:
+
+- **OpenAPI JSON**: `GET /api/openapi`
+- **Swagger UI**: `GET /docs`
+
+### Auth / Security in Swagger UI
+
+Most routes require an authenticated session (NextAuth). The OpenAPI spec uses a cookie-based security scheme (`sessionCookie`) as the default.
+
+### Are all API routes available?
+
+- **Yes (runtime)**: All API routes under `src/app/api/**/route.ts` are available when the app is running.
+- **OpenAPI coverage**: The spec currently lists all major endpoints (admin, time, leave, profile, notifications, audit, auth). Some request/response bodies are still described on a higher level (we can incrementally add full schemas).
 
 ### Health check
 
