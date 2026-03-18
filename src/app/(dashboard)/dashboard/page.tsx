@@ -1,5 +1,7 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+"use client";
+
+import { useSession } from "next-auth/react";
+import { useTranslations, useLocale } from "next-intl";
 import { TimeClockWidget } from "@/components/time/time-clock-widget";
 import { TodayOverview } from "@/components/time/today-overview";
 import { FlexBalanceCard } from "@/components/time/flex-balance-card";
@@ -10,30 +12,33 @@ export const metadata = {
   title: "Dashboard",
 };
 
-export default async function DashboardPage() {
-  const session = await getServerSession(authOptions);
+export default function DashboardPage() {
+  const { data: session } = useSession();
+  const t = useTranslations("dashboard");
+  const locale = useLocale();
 
-  const greeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Guten Morgen";
-    if (hour < 18) return "Guten Tag";
-    return "Guten Abend";
-  };
+  const hour = new Date().getHours();
+  const greetingKey =
+    hour < 12 ? "greeting.morning" : hour < 18 ? "greeting.afternoon" : "greeting.evening";
+  const greeting = t(greetingKey);
+
+  const today = new Date();
+  const formattedDate = new Intl.DateTimeFormat(locale || "de", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(today);
 
   return (
     <div className="space-y-8">
       {/* Greeting */}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">
-          {greeting()}, {session?.user.firstName}!
+          {greeting}, {session?.user.firstName}!
         </h1>
         <p className="text-muted-foreground mt-1">
-          {new Date().toLocaleDateString("de-DE", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
+          {formattedDate}
         </p>
       </div>
 

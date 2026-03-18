@@ -23,6 +23,13 @@
     "holidays": "Festivos",
     "auditLog": "Registro de auditoría"
   },
+  "dashboard": {
+    "greeting": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches"
+    }
+  },
   "auth": {
     "welcomeBack": "Bienvenido de nuevo",
     "signInToContinue": "Inicia sesión para continuar",

@@ -23,6 +23,13 @@
     "holidays": "Feiertage",
     "auditLog": "Audit-Log"
   },
+  "dashboard": {
+    "greeting": {
+      "morning": "Guten Morgen",
+      "afternoon": "Guten Tag",
+      "evening": "Guten Abend"
+    }
+  },
   "auth": {
     "welcomeBack": "Willkommen zurück",
     "signInToContinue": "Melden Sie sich an, um fortzufahren",

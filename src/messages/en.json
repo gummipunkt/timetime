@@ -23,6 +23,13 @@
     "holidays": "Holidays",
     "auditLog": "Audit log"
   },
+  "dashboard": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    }
+  },
   "auth": {
     "welcomeBack": "Welcome back",
     "signInToContinue": "Sign in to continue",

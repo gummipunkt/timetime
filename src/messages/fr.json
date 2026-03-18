@@ -23,6 +23,13 @@
     "holidays": "Jours fériés",
     "auditLog": "Journal d’audit"
   },
+  "dashboard": {
+    "greeting": {
+      "morning": "Bonjour",
+      "afternoon": "Bon après-midi",
+      "evening": "Bonsoir"
+    }
+  },
   "auth": {
     "welcomeBack": "Bon retour",
     "signInToContinue": "Connectez-vous pour continuer",
