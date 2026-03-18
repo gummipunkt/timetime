@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -26,6 +25,11 @@ import { format } from "date-fns";
 import { de } from "date-fns/locale";
 import { AuditAction } from "@prisma/client";
 import { cn } from "@/lib/utils";
+
+interface AuditUserOption {
+  id: string;
+  name: string;
+}
 
 interface AuditLog {
   id: string;
@@ -65,12 +69,47 @@ export default function AuditLogPage() {
   const [page, setPage] = useState(0);
   const [entityFilter, setEntityFilter] = useState<string>("");
   const [actionFilter, setActionFilter] = useState<string>("");
+  const [userFilter, setUserFilter] = useState<string>(""); // betroffener User
+  const [performedByFilter, setPerformedByFilter] = useState<string>(""); // wer hat es gemacht
+  const [userOptions, setUserOptions] = useState<AuditUserOption[]>([]);
+  const [isUsersLoading, setIsUsersLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const limit = 20;
 
   useEffect(() => {
     fetchLogs();
-  }, [page, entityFilter, actionFilter]);
+  }, [page, entityFilter, actionFilter, userFilter, performedByFilter]);
+
+  // Wenn Filter wechseln, Pagination zurücksetzen (sonst leere Seite durch Offset)
+  useEffect(() => {
+    setPage(0);
+  }, [entityFilter, actionFilter, userFilter, performedByFilter]);
+
+  // User-Optionen laden (für Filter-Auswahl)
+  useEffect(() => {
+    const loadUsers = async () => {
+      setIsUsersLoading(true);
+      try {
+        const response = await fetch("/api/admin/audit/users");
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "Fehler beim Laden der Nutzer");
+        }
+        if (data.success) {
+          setUserOptions(data.users || []);
+        } else {
+          throw new Error(data.error || "Unbekannter Fehler");
+        }
+      } catch (e) {
+        console.error("Fetch audit users error:", e);
+        setUserOptions([]);
+      } finally {
+        setIsUsersLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, []);
 
   const fetchLogs = async () => {
     setIsLoading(true);
@@ -81,6 +120,8 @@ export default function AuditLogPage() {
       params.set("offset", (page * limit).toString());
       if (entityFilter) params.set("entityType", entityFilter);
       if (actionFilter) params.set("action", actionFilter);
+      if (userFilter) params.set("userId", userFilter);
+      if (performedByFilter) params.set("performedById", performedByFilter);
 
       const response = await fetch(`/api/admin/audit?${params}`);
       const data = await response.json();
@@ -119,7 +160,7 @@ export default function AuditLogPage() {
       {/* Filters */}
       <Card>
         <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 flex-wrap">
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-muted-foreground" />
               <span className="text-sm font-medium">Filter:</span>
@@ -131,7 +172,6 @@ export default function AuditLogPage() {
               <SelectContent>
                 <SelectItem value="all">Alle Entitäten</SelectItem>
                 <SelectItem value="User">Benutzer</SelectItem>
-                <SelectItem value="TimeEntry">Zeiteintrag</SelectItem>
                 <SelectItem value="LEAVE_REQUEST">Urlaubsantrag</SelectItem>
                 <SelectItem value="TIME_CORRECTION">Zeitkorrektur</SelectItem>
               </SelectContent>
@@ -148,6 +188,49 @@ export default function AuditLogPage() {
                 <SelectItem value="APPROVE">Genehmigt</SelectItem>
                 <SelectItem value="REJECT">Abgelehnt</SelectItem>
                 <SelectItem value="CORRECT">Korrigiert</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select value={userFilter || "all"} onValueChange={(v) => setUserFilter(v === "all" ? "" : v)}>
+              <SelectTrigger className="w-[220px]">
+                <SelectValue placeholder="Betroffener Nutzer" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alle betroffenen Nutzer</SelectItem>
+                {isUsersLoading ? (
+                  <SelectItem value="__loading" disabled>
+                    Lade Nutzer…
+                  </SelectItem>
+                ) : (
+                  userOptions.map((u) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {u.name}
+                    </SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={performedByFilter || "all"}
+              onValueChange={(v) => setPerformedByFilter(v === "all" ? "" : v)}
+            >
+              <SelectTrigger className="w-[220px]">
+                <SelectValue placeholder="Ausgeführt von" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Alle Ausführenden</SelectItem>
+                {isUsersLoading ? (
+                  <SelectItem value="__loading2" disabled>
+                    Lade Nutzer…
+                  </SelectItem>
+                ) : (
+                  userOptions.map((u) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {u.name}
+                    </SelectItem>
+                  ))
+                )}
               </SelectContent>
             </Select>
           </div>
