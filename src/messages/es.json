@@ -1,0 +1,40 @@
+{
+  "common": {
+    "appName": "TimeTracker",
+    "login": "Iniciar sesión",
+    "documentation": "Documentación",
+    "profile": "Perfil",
+    "settings": "Ajustes",
+    "logout": "Cerrar sesión",
+    "openMenu": "Abrir menú"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "time": "Control horario",
+    "leave": "Vacaciones",
+    "team": "Calendario del equipo",
+    "timeCorrections": "Correcciones de tiempo",
+    "reports": "Informes",
+    "admin": "Administración",
+    "employees": "Empleados",
+    "timeEntries": "Registros de tiempo",
+    "departments": "Departamentos",
+    "workModels": "Modelos de trabajo",
+    "holidays": "Festivos",
+    "auditLog": "Registro de auditoría"
+  },
+  "auth": {
+    "welcomeBack": "Bienvenido de nuevo",
+    "signInToContinue": "Inicia sesión para continuar",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "signIn": "Iniciar sesión",
+    "signingIn": "Iniciando sesión...",
+    "loading": "Cargando...",
+    "invalidCredentials": "Credenciales inválidas"
+  },
+  "errors": {
+    "unknown": "Ha ocurrido un error."
+  }
+}
+

@@ -14,6 +14,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogOut, Menu, Settings, User } from "lucide-react";
 import { NotificationCenter } from "@/components/notifications/notification-center";
+import { usePathname } from "next/navigation";
+import { defaultLocale, isLocale } from "@/i18n/routing";
+import { LanguageSwitcher } from "@/components/layout/language-switcher";
+import { useTranslations } from "next-intl";
 
 interface HeaderProps {
   user: {
@@ -25,12 +29,17 @@ interface HeaderProps {
 }
 
 export function Header({ user }: HeaderProps) {
+  const pathname = usePathname() || "/";
+  const seg = pathname.split("/")[1] || "";
+  const locale = isLocale(seg) ? seg : defaultLocale;
+  const t = useTranslations();
+
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-6">
       {/* Mobile menu button */}
       <Button variant="ghost" size="icon" className="lg:hidden">
         <Menu className="h-5 w-5" />
-        <span className="sr-only">Menü öffnen</span>
+        <span className="sr-only">{t("common.openMenu")}</span>
       </Button>
 
       {/* Spacer */}
@@ -38,6 +47,8 @@ export function Header({ user }: HeaderProps) {
 
       {/* Right side actions */}
       <div className="flex items-center gap-2">
+        <LanguageSwitcher />
+
         {/* Notifications */}
         <NotificationCenter />
 
@@ -67,26 +78,26 @@ export function Header({ user }: HeaderProps) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/profile">
+              <Link href={`/${locale}/profile`}>
                 <User className="mr-2 h-4 w-4" />
-                Profil
+                {t("common.profile")}
               </Link>
             </DropdownMenuItem>
             {user.role === "ADMIN" && (
               <DropdownMenuItem asChild>
-                <Link href="/admin/settings">
+                <Link href={`/${locale}/admin/settings`}>
                   <Settings className="mr-2 h-4 w-4" />
-                  Einstellungen
+                  {t("common.settings")}
                 </Link>
               </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
             <DropdownMenuItem
               className="text-destructive focus:text-destructive"
-              onClick={() => signOut({ callbackUrl: "/login" })}
+              onClick={() => signOut({ callbackUrl: `/${locale}/login` })}
             >
               <LogOut className="mr-2 h-4 w-4" />
-              Abmelden
+              {t("common.logout")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

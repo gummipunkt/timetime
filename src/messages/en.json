@@ -1,0 +1,40 @@
+{
+  "common": {
+    "appName": "TimeTracker",
+    "login": "Sign in",
+    "documentation": "Documentation",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Sign out",
+    "openMenu": "Open menu"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "time": "Time tracking",
+    "leave": "Leave",
+    "team": "Team calendar",
+    "timeCorrections": "Time corrections",
+    "reports": "Reports",
+    "admin": "Administration",
+    "employees": "Employees",
+    "timeEntries": "Time entries",
+    "departments": "Departments",
+    "workModels": "Work models",
+    "holidays": "Holidays",
+    "auditLog": "Audit log"
+  },
+  "auth": {
+    "welcomeBack": "Welcome back",
+    "signInToContinue": "Sign in to continue",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signingIn": "Signing in...",
+    "loading": "Loading...",
+    "invalidCredentials": "Invalid credentials"
+  },
+  "errors": {
+    "unknown": "Something went wrong."
+  }
+}
+

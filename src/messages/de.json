@@ -1,0 +1,40 @@
+{
+  "common": {
+    "appName": "TimeTracker",
+    "login": "Anmelden",
+    "documentation": "Dokumentation",
+    "profile": "Profil",
+    "settings": "Einstellungen",
+    "logout": "Abmelden",
+    "openMenu": "Menü öffnen"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "time": "Zeiterfassung",
+    "leave": "Urlaub",
+    "team": "Team-Kalender",
+    "timeCorrections": "Zeitkorrekturen",
+    "reports": "Berichte",
+    "admin": "Administration",
+    "employees": "Mitarbeiter",
+    "timeEntries": "Zeiteinträge",
+    "departments": "Abteilungen",
+    "workModels": "Arbeitszeitmodelle",
+    "holidays": "Feiertage",
+    "auditLog": "Audit-Log"
+  },
+  "auth": {
+    "welcomeBack": "Willkommen zurück",
+    "signInToContinue": "Melden Sie sich an, um fortzufahren",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "signIn": "Anmelden",
+    "signingIn": "Wird angemeldet...",
+    "loading": "Laden...",
+    "invalidCredentials": "Ungültige Anmeldedaten"
+  },
+  "errors": {
+    "unknown": "Ein Fehler ist aufgetreten."
+  }
+}
+

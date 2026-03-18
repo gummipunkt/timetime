@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Role } from "@prisma/client";
+import { defaultLocale, isLocale } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 import {
   Clock,
   LayoutDashboard,
@@ -27,7 +29,7 @@ interface SidebarProps {
 }
 
 interface NavItem {
-  name: string;
+  key: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   roles: Role[];
@@ -35,37 +37,37 @@ interface NavItem {
 
 const navigation: NavItem[] = [
   {
-    name: "Dashboard",
+    key: "dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
     roles: [Role.USER, Role.SUPERVISOR, Role.ADMIN],
   },
   {
-    name: "Zeiterfassung",
+    key: "time",
     href: "/time",
     icon: Clock,
     roles: [Role.USER, Role.SUPERVISOR, Role.ADMIN],
   },
   {
-    name: "Urlaub",
+    key: "leave",
     href: "/leave",
     icon: CalendarDays,
     roles: [Role.USER, Role.SUPERVISOR, Role.ADMIN],
   },
   {
-    name: "Team-Kalender",
+    key: "team",
     href: "/team",
     icon: Users,
     roles: [Role.SUPERVISOR, Role.ADMIN],
   },
   {
-    name: "Zeitkorrekturen",
+    key: "timeCorrections",
     href: "/team/time-corrections",
     icon: ClipboardEdit,
     roles: [Role.SUPERVISOR, Role.ADMIN],
   },
   {
-    name: "Berichte",
+    key: "reports",
     href: "/reports",
     icon: BarChart3,
     roles: [Role.USER, Role.SUPERVISOR, Role.ADMIN],
@@ -74,43 +76,43 @@ const navigation: NavItem[] = [
 
 const adminNavigation: NavItem[] = [
   {
-    name: "Mitarbeiter",
+    key: "employees",
     href: "/admin/users",
     icon: Users,
     roles: [Role.ADMIN],
   },
   {
-    name: "Zeiteinträge",
+    key: "timeEntries",
     href: "/admin/time-entries",
     icon: ClipboardEdit,
     roles: [Role.ADMIN, Role.SUPERVISOR],
   },
   {
-    name: "Abteilungen",
+    key: "departments",
     href: "/admin/departments",
     icon: Building2,
     roles: [Role.ADMIN],
   },
   {
-    name: "Arbeitszeitmodelle",
+    key: "workModels",
     href: "/admin/work-models",
     icon: Clock,
     roles: [Role.ADMIN],
   },
   {
-    name: "Feiertage",
+    key: "holidays",
     href: "/admin/holidays",
     icon: CalendarDays,
     roles: [Role.ADMIN],
   },
   {
-    name: "Audit-Log",
+    key: "auditLog",
     href: "/admin/audit",
     icon: FileText,
-    roles: [Role.ADMIN],
+    roles: [Role.ADMIN, Role.SUPERVISOR],
   },
   {
-    name: "Einstellungen",
+    key: "settings",
     href: "/admin/settings",
     icon: Settings,
     roles: [Role.ADMIN],
@@ -119,6 +121,9 @@ const adminNavigation: NavItem[] = [
 
 export function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
+  const seg = (pathname || "/").split("/")[1] || "";
+  const locale = isLocale(seg) ? seg : defaultLocale;
+  const t = useTranslations();
 
   const filteredNavigation = navigation.filter((item) =>
     item.roles.includes(user.role)
@@ -142,11 +147,12 @@ export function Sidebar({ user }: SidebarProps) {
       <nav className="flex-1 overflow-y-auto p-4 scrollbar-thin">
         <div className="space-y-1">
           {filteredNavigation.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            const href = `/${locale}${item.href}`;
+            const isActive = pathname === href || pathname?.startsWith(`${href}/`);
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={href}
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive
@@ -155,7 +161,7 @@ export function Sidebar({ user }: SidebarProps) {
                 )}
               >
                 <item.icon className="h-5 w-5" />
-                {item.name}
+                {t(`nav.${item.key}`)}
               </Link>
             );
           })}
@@ -166,15 +172,16 @@ export function Sidebar({ user }: SidebarProps) {
           <div className="mt-8">
             <div className="flex items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               <Shield className="h-3.5 w-3.5" />
-              Administration
+              {t("nav.admin")}
             </div>
             <div className="mt-2 space-y-1">
               {filteredAdminNavigation.map((item) => {
-                const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                const href = `/${locale}${item.href}`;
+                const isActive = pathname === href || pathname?.startsWith(`${href}/`);
                 return (
                   <Link
                     key={item.href}
-                    href={item.href}
+                    href={href}
                     className={cn(
                       "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                       isActive
@@ -183,7 +190,7 @@ export function Sidebar({ user }: SidebarProps) {
                     )}
                   >
                     <item.icon className="h-5 w-5" />
-                    {item.name}
+                    {t(`nav.${item.key}`)}
                   </Link>
                 );
               })}
