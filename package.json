@@ -1,6 +1,6 @@
 {
-  "name": "timetracker",
-  "version": "1.0.0",
+  "name": "timetime",
+  "version": "1.0.1",
   "description": "Selbst-hostbare Zeiterfassungs- und Urlaubsplanungs-Software",
   "private": true,
   "scripts": {
