@@ -4,7 +4,7 @@ import { authOptions, isSupervisorOrAdmin } from "@/lib/auth";
 import { LeaveService } from "@/lib/services/leave.service";
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 /**
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     const updatedRequest = await LeaveService.approveRequest(
-      params.id,
+      (await params).id,
       session.user.id
     );
 

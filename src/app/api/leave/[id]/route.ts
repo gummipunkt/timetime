@@ -4,7 +4,7 @@ import { authOptions } from "@/lib/auth";
 import { LeaveService } from "@/lib/services/leave.service";
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 /**
@@ -22,7 +22,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const leaveRequest = await LeaveService.getRequestById(params.id);
+    const { id } = await params;
+    const leaveRequest = await LeaveService.getRequestById(id);
 
     if (!leaveRequest) {
       return NextResponse.json(
@@ -84,7 +85,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    await LeaveService.cancelRequest(params.id, session.user.id);
+    await LeaveService.cancelRequest((await params).id, session.user.id);
 
     return NextResponse.json({
       success: true,

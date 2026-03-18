@@ -5,7 +5,7 @@ import { AdminService } from "@/lib/services/admin.service";
 import { z } from "zod";
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const resetPasswordSchema = z.object({
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const { newPassword } = resetPasswordSchema.parse(body);
 
     await AdminService.resetPassword(
-      params.id,
+      (await params).id,
       newPassword,
       session.user.id
     );

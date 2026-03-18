@@ -6,7 +6,7 @@ import { Role } from "@prisma/client";
 import { z } from "zod";
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const updateUserSchema = z.object({
@@ -38,7 +38,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    const user = await AdminService.getUser(params.id);
+    const { id } = await params;
+    const user = await AdminService.getUser(id);
 
     if (!user) {
       return NextResponse.json(
@@ -96,7 +97,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     const validatedData = updateUserSchema.parse(body);
 
     const user = await AdminService.updateUser(
-      params.id,
+      (await params).id,
       {
         ...validatedData,
         role: validatedData.role as Role | undefined,
@@ -151,7 +152,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
-    await AdminService.deactivateUser(params.id, session.user.id);
+    await AdminService.deactivateUser((await params).id, session.user.id);
 
     return NextResponse.json({
       success: true,

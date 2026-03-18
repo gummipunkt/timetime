@@ -9,7 +9,7 @@ import { prisma } from '@/lib/prisma'
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -20,10 +20,11 @@ export async function PUT(
 
     const body = await request.json()
     const { timestamp, type, note, correctionNote } = body
+    const { id } = await context.params
 
     // Get existing entry
     const existing = await prisma.timeEntry.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: {
@@ -47,7 +48,7 @@ export async function PUT(
 
     // Update entry
     const entry = await prisma.timeEntry.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         timestamp: timestamp ? new Date(timestamp) : undefined,
         type: type || undefined,
@@ -93,7 +94,7 @@ export async function PUT(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -102,8 +103,9 @@ export async function DELETE(
       return NextResponse.json({ error: 'Nur Administratoren können Einträge löschen' }, { status: 403 })
     }
 
+    const { id } = await context.params
     const existing = await prisma.timeEntry.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: {
@@ -120,7 +122,7 @@ export async function DELETE(
     }
 
     await prisma.timeEntry.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     // Audit log
@@ -130,7 +132,7 @@ export async function DELETE(
         performedById: session.user.id,
         action: 'DELETE',
         entityType: 'TimeEntry',
-        entityId: params.id,
+        entityId: id,
         oldValues: { 
           timestamp: existing.timestamp, 
           type: existing.type 

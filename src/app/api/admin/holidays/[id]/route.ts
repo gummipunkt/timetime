@@ -7,7 +7,7 @@ import { AuditAction } from '@prisma/client'
 // GET single holiday
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -16,9 +16,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const holiday = await prisma.holiday.findUnique({
-      where: { id: params.id }
-    })
+    const { id } = await context.params
+    const holiday = await prisma.holiday.findUnique({ where: { id } })
 
     if (!holiday) {
       return NextResponse.json({ error: 'Holiday not found' }, { status: 404 })
@@ -34,7 +33,7 @@ export async function GET(
 // PUT update holiday
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -45,14 +44,13 @@ export async function PUT(
 
     const body = await request.json()
     const { name, date, region, isRecurring, isHalfDay } = body
+    const { id } = await context.params
 
     if (!name || name.trim() === '') {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 })
     }
 
-    const existing = await prisma.holiday.findUnique({
-      where: { id: params.id }
-    })
+    const existing = await prisma.holiday.findUnique({ where: { id } })
 
     if (!existing) {
       return NextResponse.json({ error: 'Holiday not found' }, { status: 404 })
@@ -62,7 +60,7 @@ export async function PUT(
     const year = holidayDate.getFullYear()
 
     const holiday = await prisma.holiday.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: name.trim(),
         date: holidayDate,
@@ -107,7 +105,7 @@ export async function PUT(
 // DELETE holiday
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -116,16 +114,15 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const holiday = await prisma.holiday.findUnique({
-      where: { id: params.id }
-    })
+    const { id } = await context.params
+    const holiday = await prisma.holiday.findUnique({ where: { id } })
 
     if (!holiday) {
       return NextResponse.json({ error: 'Holiday not found' }, { status: 404 })
     }
 
     await prisma.holiday.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     await prisma.auditLog.create({
@@ -133,7 +130,7 @@ export async function DELETE(
         performedById: session.user.id,
         action: AuditAction.DELETE,
         entityType: 'Holiday',
-        entityId: params.id,
+        entityId: id,
         oldValues: {
           name: holiday.name,
           date: holiday.date,

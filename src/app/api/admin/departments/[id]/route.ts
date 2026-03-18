@@ -7,7 +7,7 @@ import { AuditAction } from '@prisma/client'
 // GET single department
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -16,8 +16,9 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await context.params
     const department = await prisma.department.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: { members: true }
@@ -39,7 +40,7 @@ export async function GET(
 // PUT update department
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -50,6 +51,7 @@ export async function PUT(
 
     const body = await request.json()
     const { name, description } = body
+    const { id } = await context.params
 
     if (!name || name.trim() === '') {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 })
@@ -57,7 +59,7 @@ export async function PUT(
 
     // Check if department exists
     const existing = await prisma.department.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!existing) {
@@ -68,7 +70,7 @@ export async function PUT(
     const duplicate = await prisma.department.findFirst({
       where: {
         name: name.trim(),
-        NOT: { id: params.id }
+        NOT: { id }
       }
     })
 
@@ -77,7 +79,7 @@ export async function PUT(
     }
 
     const department = await prisma.department.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: name.trim(),
         description: description?.trim() || null,
@@ -112,7 +114,7 @@ export async function PUT(
 // DELETE department
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -122,8 +124,9 @@ export async function DELETE(
     }
 
     // Check if department exists and has users
+    const { id } = await context.params
     const department = await prisma.department.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: { members: true }
@@ -142,7 +145,7 @@ export async function DELETE(
     }
 
     await prisma.department.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     // Log the action
@@ -151,7 +154,7 @@ export async function DELETE(
         performedById: session.user.id,
         action: AuditAction.DELETE,
         entityType: 'Department',
-        entityId: params.id,
+        entityId: id,
         oldValues: { name: department.name, description: department.description },
         description: `Abteilung ${department.name} wurde gelöscht`,
       }

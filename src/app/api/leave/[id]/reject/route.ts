@@ -5,7 +5,7 @@ import { LeaveService } from "@/lib/services/leave.service";
 import { z } from "zod";
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 const rejectSchema = z.object({
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const { reason } = rejectSchema.parse(body);
 
     const updatedRequest = await LeaveService.rejectRequest(
-      params.id,
+      (await params).id,
       session.user.id,
       reason
     );

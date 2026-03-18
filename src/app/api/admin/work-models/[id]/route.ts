@@ -7,7 +7,7 @@ import { AuditAction } from '@prisma/client'
 // GET single work model
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -16,8 +16,9 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const { id } = await context.params
     const workModel = await prisma.workTimeModel.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: { users: true }
@@ -42,7 +43,7 @@ export async function GET(
 // PUT update work model
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -64,6 +65,7 @@ export async function PUT(
       sundayMinutes,
       isDefault 
     } = body
+    const { id } = await context.params
 
     if (!name || name.trim() === '') {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 })
@@ -71,7 +73,7 @@ export async function PUT(
 
     // Check if work model exists
     const existing = await prisma.workTimeModel.findUnique({
-      where: { id: params.id }
+      where: { id }
     })
 
     if (!existing) {
@@ -82,7 +84,7 @@ export async function PUT(
     const duplicate = await prisma.workTimeModel.findFirst({
       where: {
         name: name.trim(),
-        NOT: { id: params.id }
+        NOT: { id }
       }
     })
 
@@ -99,7 +101,7 @@ export async function PUT(
     }
 
     const workModel = await prisma.workTimeModel.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: name.trim(),
         description: description?.trim() || null,
@@ -162,7 +164,7 @@ export async function PUT(
 // DELETE work model
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -172,8 +174,9 @@ export async function DELETE(
     }
 
     // Check if work model exists and has users
+    const { id } = await context.params
     const workModel = await prisma.workTimeModel.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         _count: {
           select: { users: true }
@@ -198,7 +201,7 @@ export async function DELETE(
     }
 
     await prisma.workTimeModel.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     // Log the action
@@ -207,7 +210,7 @@ export async function DELETE(
         performedById: session.user.id,
         action: AuditAction.DELETE,
         entityType: 'WorkTimeModel',
-        entityId: params.id,
+        entityId: id,
         oldValues: {
           name: workModel.name,
           description: workModel.description,

@@ -4,7 +4,7 @@ import { authOptions, isSupervisorOrAdmin } from "@/lib/auth";
 import { TimeCorrectionService } from "@/lib/services/time-correction.service";
 
 interface RouteParams {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 /**
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     const updated = await TimeCorrectionService.approveRequest(
-      params.id,
+      (await params).id,
       session.user.id
     );
 
