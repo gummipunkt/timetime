@@ -65,6 +65,7 @@ export default function AuditLogPage() {
   const [page, setPage] = useState(0);
   const [entityFilter, setEntityFilter] = useState<string>("");
   const [actionFilter, setActionFilter] = useState<string>("");
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const limit = 20;
 
   useEffect(() => {
@@ -73,6 +74,7 @@ export default function AuditLogPage() {
 
   const fetchLogs = async () => {
     setIsLoading(true);
+    setFetchError(null);
     try {
       const params = new URLSearchParams();
       params.set("limit", limit.toString());
@@ -83,12 +85,20 @@ export default function AuditLogPage() {
       const response = await fetch(`/api/admin/audit?${params}`);
       const data = await response.json();
 
+      if (!response.ok) {
+        throw new Error(data.error || "Fehler beim Laden");
+      }
       if (data.success) {
         setLogs(data.logs);
         setTotal(data.total);
+      } else {
+        throw new Error(data.error || "Unbekannter Fehler");
       }
     } catch (error) {
       console.error("Fetch error:", error);
+      setFetchError(error instanceof Error ? error.message : "Fehler beim Laden der Audit-Logs");
+      setLogs([]);
+      setTotal(0);
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +132,8 @@ export default function AuditLogPage() {
                 <SelectItem value="all">Alle Entitäten</SelectItem>
                 <SelectItem value="User">Benutzer</SelectItem>
                 <SelectItem value="TimeEntry">Zeiteintrag</SelectItem>
-                <SelectItem value="LeaveRequest">Urlaubsantrag</SelectItem>
+                <SelectItem value="LEAVE_REQUEST">Urlaubsantrag</SelectItem>
+                <SelectItem value="TIME_CORRECTION">Zeitkorrektur</SelectItem>
               </SelectContent>
             </Select>
             <Select value={actionFilter || "all"} onValueChange={(v) => setActionFilter(v === "all" ? "" : v)}>
@@ -159,6 +170,14 @@ export default function AuditLogPage() {
             <div className="flex items-center justify-center py-12">
               <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
             </div>
+          ) : fetchError ? (
+            <div className="text-center py-12">
+              <p className="text-destructive font-medium">{fetchError}</p>
+              <p className="text-sm text-muted-foreground mt-1">Bitte prüfen Sie Ihre Berechtigung (nur Admin).</p>
+              <Button variant="outline" className="mt-4" onClick={fetchLogs}>
+                Erneut laden
+              </Button>
+            </div>
           ) : logs.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
@@ -177,10 +196,13 @@ export default function AuditLogPage() {
                         {log.entityType === "TimeEntry" && (
                           <Clock className="w-5 h-5 text-muted-foreground" />
                         )}
-                        {log.entityType === "LeaveRequest" && (
+                        {(log.entityType === "LeaveRequest" || log.entityType === "LEAVE_REQUEST") && (
                           <CalendarDays className="w-5 h-5 text-muted-foreground" />
                         )}
-                        {!["User", "TimeEntry", "LeaveRequest"].includes(
+                        {log.entityType === "TIME_CORRECTION" && (
+                          <Clock className="w-5 h-5 text-muted-foreground" />
+                        )}
+                        {!["User", "TimeEntry", "LeaveRequest", "LEAVE_REQUEST", "TIME_CORRECTION"].includes(
                           log.entityType
                         ) && (
                           <FileText className="w-5 h-5 text-muted-foreground" />

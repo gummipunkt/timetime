@@ -57,11 +57,44 @@ export class TimeCorrectionService {
             firstName: true,
             lastName: true,
             email: true,
+            supervisorId: true,
           },
         },
         timeEntry: true,
       },
     });
+
+    // Audit-Log für Erstellung
+    await AdminService.createAuditLog({
+      userId: input.userId,
+      performedById: input.userId,
+      action: AuditAction.CREATE,
+      entityType: "TIME_CORRECTION",
+      entityId: request.id,
+      newValues: {
+        requestedType: input.requestedType,
+        requestedTimestamp: input.requestedTimestamp,
+        reason: input.reason,
+      },
+      description: `Zeitkorrekturantrag erstellt: ${input.reason}`,
+    });
+
+    // Benachrichtigung für Vorgesetzten
+    const supervisorId = request.user?.supervisorId;
+    if (supervisorId) {
+      await (prisma as any).notification.create({
+        data: {
+          userId: supervisorId,
+          entityType: "TIME_CORRECTION",
+          entityId: request.id,
+          type: "TIME_CORRECTION",
+          action: AuditAction.CREATE,
+          title: "Neuer Zeitkorrekturantrag",
+          message: `${request.user.firstName} ${request.user.lastName} hat einen Zeitkorrekturantrag zur Genehmigung eingereicht.`,
+          link: "/team/time-corrections",
+        },
+      });
+    }
 
     return request;
   }

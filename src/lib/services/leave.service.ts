@@ -129,6 +129,42 @@ export class LeaveService {
       await this.updateBalance(input.userId, input.startDate.getFullYear());
     }
 
+    // Audit-Log für Erstellung
+    await AdminService.createAuditLog({
+      userId: input.userId,
+      performedById: input.userId,
+      action: AuditAction.CREATE,
+      entityType: "LEAVE_REQUEST",
+      entityId: request.id,
+      newValues: {
+        type: input.type,
+        startDate: request.startDate,
+        endDate: request.endDate,
+        totalDays: request.totalDays,
+      },
+      description: `Urlaubsantrag erstellt: ${format(request.startDate, "dd.MM.yyyy")} – ${format(request.endDate, "dd.MM.yyyy")} (${request.totalDays} Tage)`,
+    });
+
+    // Benachrichtigung für Vorgesetzten
+    const employee = await prisma.user.findUnique({
+      where: { id: input.userId },
+      select: { supervisorId: true, firstName: true, lastName: true },
+    });
+    if (employee?.supervisorId) {
+      await (prisma as any).notification.create({
+        data: {
+          userId: employee.supervisorId,
+          entityType: "LEAVE_REQUEST",
+          entityId: request.id,
+          type: "LEAVE_REQUEST",
+          action: AuditAction.CREATE,
+          title: "Neuer Urlaubsantrag",
+          message: `${employee.firstName} ${employee.lastName} hat einen Urlaubsantrag zur Genehmigung eingereicht.`,
+          link: "/leave",
+        },
+      });
+    }
+
     return request;
   }
 

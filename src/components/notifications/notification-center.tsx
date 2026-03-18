@@ -18,11 +18,11 @@ import Link from "next/link";
 interface NotificationItem {
   id: string;
   type: string;
-  action: "APPROVED" | "REJECTED" | "CANCELLED" | "UPDATED";
+  action: "APPROVED" | "REJECTED" | "CANCELLED" | "UPDATED" | "CREATED";
   title: string;
   message: string;
   createdAt: string;
-  actorName: string;
+  actorName?: string;
   link: string;
 }
 
@@ -49,10 +49,14 @@ export function NotificationCenter() {
     loadNotifications();
   }, []);
 
+  const handleOpenChange = (open: boolean) => {
+    if (open) loadNotifications();
+  };
+
   const unseenCount = notifications.length;
 
   return (
-    <DropdownMenu>
+    <DropdownMenu onOpenChange={handleOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -119,9 +123,11 @@ export function NotificationCenter() {
                       {n.message}
                     </p>
                   )}
-                  <p className="mt-0.5 text-[11px] text-muted-foreground">
-                    Von: <strong>{n.actorName}</strong>
-                  </p>
+                  {n.actorName && (
+                    <p className="mt-0.5 text-[11px] text-muted-foreground">
+                      Von: <strong>{n.actorName}</strong>
+                    </p>
+                  )}
                 </Link>
               </DropdownMenuItem>
             ))}
