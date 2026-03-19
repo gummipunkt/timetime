@@ -16,7 +16,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale: rawLocale } = await params;
   const locale = isLocale(rawLocale) ? (rawLocale as Locale) : defaultLocale;
-  const baseTitle = "TimeTracker";
+  const baseTitle = "TimeTime";
 
   return {
     title: {

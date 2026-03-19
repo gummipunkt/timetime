@@ -30,6 +30,14 @@ export function NotificationCenter() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Security: Only allow known in-app routes as notification targets.
+  // This prevents untrusted data from ever reaching `href`.
+  const safeHref = (href: string) => {
+    const value = href?.trim() || "";
+    if (value === "/leave" || value === "/team/time-corrections") return value;
+    return "/leave";
+  };
+
   const loadNotifications = async () => {
     setIsLoading(true);
     try {
@@ -109,7 +117,7 @@ export function NotificationCenter() {
                 className="flex flex-col items-start gap-1 py-2 px-3 whitespace-normal"
                 asChild
               >
-                <Link href={n.link}>
+                <Link href={safeHref(n.link)}>
                   <div className="flex items-center justify-between w-full gap-2">
                     <span className="text-xs font-medium">{n.title}</span>
                     <span className="text-[10px] text-muted-foreground">

@@ -21,7 +21,7 @@ export default async function Home({ params }: { params: { locale: string } }) {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center shadow-lg shadow-purple-200">
               <Clock className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-800 tracking-tight">TimeTracker</span>
+            <span className="text-2xl font-bold text-gray-800 tracking-tight">TimeTime</span>
           </div>
           <Link href={`/${locale}/login`}>
             <Button variant="outline" className="border-purple-200 text-purple-700 hover:bg-purple-50">
@@ -33,7 +33,7 @@ export default async function Home({ params }: { params: { locale: string } }) {
         <div className="relative z-10 container mx-auto px-4 py-24 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 border border-purple-200 text-purple-700 text-sm font-medium mb-8">
             <Zap className="w-4 h-4" />
-            Self-Hosted • Open Source • DSGVO-konform
+            Self-Hosted • Open Source • DSGVO-konform • GPL v3 Lizenz
           </div>
 
           <h1 className="text-5xl md:text-7xl font-bold text-gray-800 mb-6 tracking-tight">
@@ -56,13 +56,20 @@ export default async function Home({ params }: { params: { locale: string } }) {
                 Jetzt starten
               </Button>
             </Link>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-purple-200 text-purple-700 hover:bg-purple-50 px-8 py-6 text-lg"
+            <a
+              href="https://github.com/gummipunkt/timetime"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block"
             >
-              {t("common.documentation")}
-            </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-purple-200 text-purple-700 hover:bg-purple-50 px-8 py-6 text-lg"
+              >
+                {t("common.documentation")}
+              </Button>
+            </a>
           </div>
         </div>
 
@@ -162,7 +169,7 @@ export default async function Home({ params }: { params: { locale: string } }) {
           <CardContent className="p-12 text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Bereit für moderne Zeiterfassung?</h2>
             <p className="text-gray-600 max-w-xl mx-auto mb-8">
-              Starten Sie noch heute mit TimeTracker. Vollständig selbst hostbar, keine Cloud-Abhängigkeit, volle Kontrolle über Ihre Daten.
+              Starten Sie noch heute mit TimeTime. Vollständig selbst hostbar, keine Cloud-Abhängigkeit, volle Kontrolle über Ihre Daten.
             </p>
             <Link href={`/${locale}/login`}>
               <Button
@@ -183,9 +190,11 @@ export default async function Home({ params }: { params: { locale: string } }) {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center">
               <Clock className="w-4 h-4 text-white" />
             </div>
-            <span className="text-lg font-semibold text-gray-800">TimeTracker</span>
+            <span className="text-lg font-semibold text-gray-800">TimeTime</span>
           </div>
-          <p className="text-sm">© {new Date().getFullYear()} TimeTracker. Open Source Zeiterfassung für Unternehmen.</p>
+          <p className="text-sm">
+            © {new Date().getFullYear()} TimeTime. Open Source Zeiterfassung für Unternehmen. GLP v3 Lizenz - <Link href="https://github.com/gummipunkt/TimeTime/">GitHub</Link>
+          </p>
         </div>
       </footer>
     </div>

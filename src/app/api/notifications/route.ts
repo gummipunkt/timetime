@@ -67,7 +67,12 @@ export async function GET(request: NextRequest) {
           title: n.title,
           message: n.message,
           createdAt: n.createdAt,
-          link: n.link || (n.entityType === "LEAVE_REQUEST" ? "/leave" : "/team/time-corrections"),
+          // Security: never trust persisted `notification.link` as an href.
+          // We derive the link solely from `entityType` (whitelist).
+          link:
+            n.entityType === "LEAVE_REQUEST"
+              ? "/leave"
+              : "/team/time-corrections",
         };
       });
     } else {

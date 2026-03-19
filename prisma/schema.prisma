@@ -1,4 +1,4 @@
-// TimeTracker - Prisma Schema
+// TimeTime - Prisma Schema
 // Zeiterfassungs- und Urlaubsplanungs-Software
 
 generator client {

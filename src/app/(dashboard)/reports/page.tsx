@@ -173,6 +173,13 @@ export default function ReportsPage() {
                   if (!res.ok) return;
                   const blob = await res.blob();
                   const url = window.URL.createObjectURL(blob);
+                  // Safety: we only ever navigate/download to a browser-generated `blob:` URL.
+                  // The URL is not derived from user-controlled strings.
+                  if (!url.startsWith("blob:")) {
+                    window.URL.revokeObjectURL(url);
+                    console.error("Export failed: unexpected URL scheme");
+                    return;
+                  }
                   const a = document.createElement("a");
                   a.href = url;
                   a.download = `monthly-timesheet-${year}-${month}.csv`;
