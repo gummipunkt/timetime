@@ -6,7 +6,9 @@
     "profile": "Profil",
     "settings": "Paramètres",
     "logout": "Se déconnecter",
-    "openMenu": "Ouvrir le menu"
+    "openMenu": "Ouvrir le menu",
+    "cancel": "Annuler",
+    "close": "Fermer"
   },
   "nav": {
     "dashboard": "Tableau de bord",
@@ -21,13 +23,24 @@
     "departments": "Départements",
     "workModels": "Modèles de travail",
     "holidays": "Jours fériés",
-    "auditLog": "Journal d’audit"
+    "auditLog": "Journal d’audit",
+    "settings": "Paramètres système"
   },
   "dashboard": {
     "greeting": {
       "morning": "Bonjour",
       "afternoon": "Bon après-midi",
       "evening": "Bonsoir"
+    },
+    "stats": {
+      "workedToday": "Travaillé aujourd’hui",
+      "ofTarget": "sur {target} heures cibles",
+      "flexBalance": "Solde d’heures flexibles",
+      "flexBalanceSub": "Heures sup. totales",
+      "leaveRemaining": "Congés restants",
+      "daysAvailable": "jours disponibles",
+      "deltaToday": "Delta du jour",
+      "deltaSub": "Plus/moins aujourd’hui"
     }
   },
   "auth": {
@@ -42,6 +55,268 @@
   },
   "errors": {
     "unknown": "Une erreur est survenue."
+  },
+  "toast": {
+    "successTitle": "Succès",
+    "errorTitle": "Erreur",
+    "unknownError": "Erreur inconnue"
+  },
+  "landing": {
+    "badge": "Auto-hébergé • Open source • Compatible RGPD",
+    "headline": "Suivi du temps",
+    "headlineAccent": "en toute simplicité",
+    "subheadline": "Une solution moderne pour le temps de travail et les congés. Entièrement auto-hébergeable, respectueuse de la vie privée et adaptable à vos besoins.",
+    "ctaStart": "Commencer",
+    "ctaDemo": "Essayer la démo",
+    "featuresHeading": "Tout ce dont vous avez besoin",
+    "featuresLead": "Un système complet pour le suivi du temps moderne avec les fonctionnalités dont votre organisation a besoin.",
+    "bottomTitle": "Prêt pour un suivi du temps moderne ?",
+    "bottomLead": "Lancez-vous avec TimeTracker dès aujourd’hui. Entièrement auto-hébergé, sans dépendance cloud, contrôle total de vos données.",
+    "footer": "© {year} TimeTracker. Suivi du temps open source pour les entreprises.",
+    "features": {
+      "realtime": {
+        "title": "Pointage en temps réel",
+        "description": "Enregistrez arrivées, départs et pauses en un clic, avec calcul du temps de travail en direct."
+      },
+      "leave": {
+        "title": "Gestion des congés",
+        "description": "Soumettez et approuvez les demandes et visualisez-les sur le calendrier d’équipe."
+      },
+      "team": {
+        "title": "Gestion d’équipe",
+        "description": "Gérez les départements, les superviseurs et les modèles de temps de travail flexibles."
+      },
+      "flex": {
+        "title": "Temps flexible & heures sup.",
+        "description": "Calcul automatique des heures cibles/réelles et du solde de temps flexible."
+      },
+      "roles": {
+        "title": "Rôles & droits",
+        "description": "Des droits précis pour les administrateurs, superviseurs et employés."
+      },
+      "holidays": {
+        "title": "Calendrier des jours fériés",
+        "description": "Prise en compte automatique des jours fériés selon la région."
+      }
+    }
+  },
+  "leave": {
+    "metaTitle": "Congés",
+    "page": {
+      "title": "Gestion des congés",
+      "description": "Gérez vos demandes de congé et gardez une vue d’ensemble.",
+      "newRequest": "Nouvelle demande",
+      "quickOverview": "Aperçu rapide",
+      "statOpen": "Demandes ouvertes",
+      "statApproved": "Approuvées",
+      "statDaysTaken": "Jours pris",
+      "tabMyRequests": "Mes demandes",
+      "tabApprovals": "Approbations",
+      "tabCalendar": "Calendrier d’équipe",
+      "calendarCardTitle": "Calendrier d’équipe",
+      "calendarPlaceholder1": "Le calendrier d’équipe s’affichera ici.",
+      "calendarPlaceholder2": "Voyez qui est absent et quand."
+    },
+    "types": {
+      "VACATION": "Congés payés",
+      "SICK": "Arrêt maladie",
+      "SPECIAL": "Congé spécial",
+      "UNPAID": "Congé sans solde",
+      "COMPENSATORY": "Récupération d’heures",
+      "PARENTAL": "Congé parental",
+      "OTHER": "Autre"
+    },
+    "formTypes": {
+      "VACATION": {
+        "label": "Congés annuels",
+        "description": "Congés payés classiques"
+      },
+      "SICK": {
+        "label": "Maladie",
+        "description": "Déclaration de maladie (certificat médical si besoin)"
+      },
+      "SPECIAL": {
+        "label": "Congé spécial",
+        "description": "Mariage, naissance, déménagement, etc."
+      },
+      "COMPENSATORY": {
+        "label": "Récupération",
+        "description": "Compensation d’heures supplémentaires"
+      },
+      "UNPAID": {
+        "label": "Congé sans solde",
+        "description": "Absence non rémunérée"
+      },
+      "PARENTAL": {
+        "label": "Congé parental",
+        "description": "Congé parental / protection maternité"
+      },
+      "OTHER": {
+        "label": "Autre",
+        "description": "Autre absence"
+      }
+    },
+    "status": {
+      "PENDING": "En attente",
+      "APPROVED": "Approuvé",
+      "REJECTED": "Refusé",
+      "CANCELLED": "Annulé"
+    },
+    "list": {
+      "title": "Mes demandes",
+      "empty": "Aucune demande de congé.",
+      "emptyHint": "Créez une nouvelle demande pour commencer.",
+      "confirmCancel": "Voulez-vous vraiment annuler cette demande ?",
+      "cancelSuccess": "La demande a été annulée.",
+      "cancel": "Annuler la demande",
+      "day": "jour",
+      "days": "jours",
+      "reasonLabel": "Motif :",
+      "approvedBy": "Approuvé par {name} le {date}"
+    },
+    "approvals": {
+      "title": "Approbations en attente",
+      "empty": "Aucune approbation en attente.",
+      "emptyHint": "Toutes les demandes ont été traitées.",
+      "approveSuccess": "La demande a été approuvée.",
+      "rejectSuccess": "La demande a été refusée.",
+      "history": "Historique",
+      "reject": "Refuser",
+      "approve": "Approuver",
+      "reasonShown": "Motif : « {reason} »",
+      "submittedOn": "Demandé le {dateTime}",
+      "rejectTitle": "Refuser la demande",
+      "rejectDescription": "Veuillez indiquer un motif de refus.",
+      "rejectPlaceholder": "Motif du refus…",
+      "historyTitle": "Historique de la demande",
+      "historyDescription": "Approbations et refus pour cette demande de congé.",
+      "historyLoadError": "Impossible de charger l’historique.",
+      "historyEmpty": "Aucune action n’a encore été enregistrée pour cette demande.",
+      "historyBy": "Par : {name}",
+      "auditApprove": "Approuvé",
+      "auditReject": "Refusé",
+      "auditUpdate": "Mis à jour"
+    },
+    "new": {
+      "title": "Nouvelle demande de congé",
+      "subtitle": "Remplissez le formulaire pour soumettre une demande.",
+      "balanceInfo": "Il vous reste {remaining} jours de congé ({pending} en attente, {used} pris).",
+      "formTitle": "Créer une demande",
+      "formDescription": "Les champs marqués * sont obligatoires.",
+      "absenceType": "Type d’absence *",
+      "from": "Du *",
+      "to": "Au *",
+      "halfDay": "Demi-journée seulement",
+      "estimated": "Durée estimée :",
+      "estimatedDays": "{count} jours",
+      "estimatedNote": "(le calcul exact est effectué par le système)",
+      "reason": "Justification",
+      "reasonPlaceholder": "Facultatif : motif de la demande…",
+      "reasonHintSonder": "Un motif est obligatoire pour un congé spécial.",
+      "submit": "Soumettre la demande",
+      "submitting": "Envoi en cours…",
+      "toastDatesRequired": "Veuillez choisir les dates de début et de fin.",
+      "toastSubmitted": "Votre demande de congé a été soumise."
+    },
+    "balance": {
+      "title": "Jours de congé {year}",
+      "requestShort": "Demande",
+      "available": "jours disponibles",
+      "takenLegend": "Pris : {count}",
+      "pendingLegend": "Demandés : {count}",
+      "total": "Total : {count}",
+      "taken": "Pris",
+      "pending": "Demandés",
+      "left": "Restants",
+      "carryOver": "Dont {count} jours reportés de l’année précédente."
+    }
+  },
+  "time": {
+    "metaTitle": "Suivi du temps",
+    "page": {
+      "title": "Suivi du temps",
+      "description": "Enregistrez votre temps de travail et gardez le contrôle.",
+      "tabToday": "Aujourd’hui",
+      "tabMonth": "Vue mensuelle",
+      "tabStats": "Statistiques",
+      "dayStatsTitle": "Statistiques du jour",
+      "workTime": "Temps de travail",
+      "breakTime": "Temps de pause",
+      "targetTime": "Temps cible",
+      "delta": "Delta",
+      "statsCardTitle": "Statistiques",
+      "statsPlaceholder1": "Les statistiques s’afficheront ici.",
+      "statsPlaceholder2": "Graphiques et analyses de votre temps de travail."
+    },
+    "clock": {
+      "statusOff": "Non pointé",
+      "statusWorking": "Au travail",
+      "statusBreak": "En pause",
+      "workedToday": "Travaillé aujourd’hui",
+      "targetLabel": "Cible :",
+      "deltaLabel": "Delta :",
+      "clockIn": "Arrivée",
+      "pause": "Pause",
+      "clockOut": "Départ",
+      "resume": "Reprendre",
+      "remainingBreak": "Pause obligatoire restante :",
+      "breakToday": "Pause aujourd’hui :",
+      "flexBalanceTotal": "Solde flex total :",
+      "toastIn": "Vous êtes maintenant pointé à l’arrivée.",
+      "toastOut": "Vous êtes maintenant pointé au départ.",
+      "toastBreakStart": "Pause commencée. Bon repos !",
+      "toastBreakEnd": "Pause terminée. Reprenons !"
+    },
+    "entryTypes": {
+      "CLOCK_IN": "Arrivée",
+      "CLOCK_OUT": "Départ",
+      "BREAK_START": "Début de pause",
+      "BREAK_END": "Fin de pause"
+    },
+    "today": {
+      "title": "Pointages du jour",
+      "retry": "Recharger",
+      "empty": "Aucun pointage aujourd’hui.",
+      "emptyHint": "Pointez votre arrivée pour commencer.",
+      "breakToday": "Pause aujourd’hui",
+      "breakRequired": "Encore {duration} de pause obligatoire",
+      "breakFulfilled": "✓ Pause obligatoire de {duration} effectuée",
+      "requestCorrection": "Demander une correction",
+      "correctionTitle": "Demander une correction d’horaire",
+      "correctionDescription": "Indiquez l’heure souhaitée et une courte justification.",
+      "newTime": "Nouvelle heure",
+      "reason": "Justification",
+      "reasonPlaceholder": "ex. oubli de pointer, heure incorrecte…",
+      "submitting": "Envoi…",
+      "submitCorrection": "Envoyer la demande",
+      "toastCorrectionCreated": "Demande de correction créée",
+      "toastCorrectionCreatedDesc": "Votre demande a été envoyée à votre manager ou aux RH.",
+      "toastCorrectionError": "Impossible de créer la demande.",
+      "toastCorrectionErrorCreate": "Impossible de créer la demande de correction."
+    },
+    "flexCard": {
+      "title": "Solde d’heures flexibles",
+      "hoursTotal": "Heures au total",
+      "today": "Aujourd’hui",
+      "info": "Le solde flex indique les heures accumulées ou dues selon votre modèle de travail."
+    },
+    "monthly": {
+      "title": "Vue mensuelle",
+      "today": "Aujourd’hui",
+      "worked": "Travaillé",
+      "target": "Cible",
+      "monthBalance": "Solde du mois",
+      "flexTotal": "Solde flex total",
+      "colDay": "Jour",
+      "colIn": "Arrivée",
+      "colOut": "Départ",
+      "colWorked": "Travail",
+      "colTarget": "Cible",
+      "colDelta": "Delta",
+      "legendToday": "Aujourd’hui",
+      "legendHoliday": "Jour férié",
+      "legendLeave": "Congé",
+      "legendWeekend": "Week-end"
+    }
   }
 }
-

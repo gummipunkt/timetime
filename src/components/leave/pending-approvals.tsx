@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { usePendingApprovals } from "@/hooks/use-leave";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,6 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { format } from "date-fns";
-import { de } from "date-fns/locale";
 import { LeaveType } from "@prisma/client";
 import {
   Dialog,
@@ -27,20 +26,36 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useLocale, useTranslations } from "next-intl";
+import { getDateFnsLocale } from "@/lib/date-fns-locale";
 
-const leaveTypeLabels: Record<LeaveType, string> = {
-  VACATION: "Urlaub",
-  SICK: "Krankheit",
-  SPECIAL: "Sonderurlaub",
-  UNPAID: "Unbezahlt",
-  COMPENSATORY: "Überstundenausgleich",
-  PARENTAL: "Elternzeit",
-  OTHER: "Sonstiges",
-};
+function leaveTypeLabel(type: LeaveType, t: (key: string) => string) {
+  const m: Record<LeaveType, string> = {
+    VACATION: t("types.VACATION"),
+    SICK: t("types.SICK"),
+    SPECIAL: t("types.SPECIAL"),
+    UNPAID: t("types.UNPAID"),
+    COMPENSATORY: t("types.COMPENSATORY"),
+    PARENTAL: t("types.PARENTAL"),
+    OTHER: t("types.OTHER"),
+  };
+  return m[type];
+}
+
+function auditActionLabel(action: string, t: (key: string) => string) {
+  if (action === "APPROVE") return t("approvals.auditApprove");
+  if (action === "REJECT") return t("approvals.auditReject");
+  if (action === "UPDATE") return t("approvals.auditUpdate");
+  return action;
+}
 
 export function PendingApprovals() {
-  const { requests, isLoading, error, approveRequest, rejectRequest, refresh } =
-    usePendingApprovals();
+  const locale = useLocale();
+  const dfLocale = getDateFnsLocale(locale);
+  const t = useTranslations("leave");
+  const tToast = useTranslations("toast");
+  const tCommon = useTranslations("common");
+  const { requests, isLoading, error, approveRequest, rejectRequest } = usePendingApprovals();
   const { toast } = useToast();
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
@@ -65,13 +80,13 @@ export function PendingApprovals() {
     try {
       await approveRequest(id);
       toast({
-        title: "Erfolg",
-        description: "Antrag wurde genehmigt.",
+        title: tToast("successTitle"),
+        description: t("approvals.approveSuccess"),
       });
     } catch (err) {
       toast({
-        title: "Fehler",
-        description: err instanceof Error ? err.message : "Unbekannter Fehler",
+        title: tToast("errorTitle"),
+        description: err instanceof Error ? err.message : tToast("unknownError"),
         variant: "destructive",
       });
     } finally {
@@ -92,14 +107,14 @@ export function PendingApprovals() {
     try {
       await rejectRequest(rejectingId, rejectReason);
       toast({
-        title: "Erfolg",
-        description: "Antrag wurde abgelehnt.",
+        title: tToast("successTitle"),
+        description: t("approvals.rejectSuccess"),
       });
       setRejectDialogOpen(false);
     } catch (err) {
       toast({
-        title: "Fehler",
-        description: err instanceof Error ? err.message : "Unbekannter Fehler",
+        title: tToast("errorTitle"),
+        description: err instanceof Error ? err.message : tToast("unknownError"),
         variant: "destructive",
       });
     } finally {
@@ -120,21 +135,21 @@ export function PendingApprovals() {
       const res = await fetch(`/api/admin/audit?${params.toString()}`);
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "Historie konnte nicht geladen werden.");
+        throw new Error(data.error || t("approvals.historyLoadError"));
       }
       setHistoryLogs(
-        (data.logs || []).map((log: any) => ({
-          id: log.id,
-          action: log.action,
-          entityType: log.entityType,
-          description: log.description,
-          performedBy: log.performedBy,
-          createdAt: log.createdAt,
+        (data.logs || []).map((log: Record<string, unknown>) => ({
+          id: log.id as string,
+          action: log.action as string,
+          entityType: log.entityType as string,
+          description: log.description as string | null,
+          performedBy: log.performedBy as { id: string; name: string },
+          createdAt: log.createdAt as string,
         }))
       );
     } catch (err) {
       setHistoryError(
-        err instanceof Error ? err.message : "Historie konnte nicht geladen werden."
+        err instanceof Error ? err.message : t("approvals.historyLoadError")
       );
     } finally {
       setHistoryLoading(false);
@@ -167,14 +182,14 @@ export function PendingApprovals() {
       <Card>
         <CardContent className="text-center py-12">
           <ClipboardCheck className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
-          <p className="text-muted-foreground">Keine ausstehenden Genehmigungen.</p>
-          <p className="text-sm text-muted-foreground">
-            Alle Anträge wurden bearbeitet.
-          </p>
+          <p className="text-muted-foreground">{t("approvals.empty")}</p>
+          <p className="text-sm text-muted-foreground">{t("approvals.emptyHint")}</p>
         </CardContent>
       </Card>
     );
   }
+
+  const tLeave = t as unknown as (key: string) => string;
 
   return (
     <>
@@ -182,7 +197,7 @@ export function PendingApprovals() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <ClipboardCheck className="w-5 h-5" />
-            Ausstehende Genehmigungen
+            {t("approvals.title")}
             <Badge variant="secondary" className="ml-2">
               {requests.length}
             </Badge>
@@ -203,25 +218,25 @@ export function PendingApprovals() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-medium">{request.user.name}</span>
                       <Badge variant="outline" className="text-xs">
-                        {leaveTypeLabels[request.type]}
+                        {leaveTypeLabel(request.type, tLeave)}
                       </Badge>
                     </div>
                     <p className="text-sm text-muted-foreground mt-1">
                       <CalendarDays className="w-3 h-3 inline mr-1" />
-                      {format(request.startDate, "dd. MMM", { locale: de })} -{" "}
-                      {format(request.endDate, "dd. MMM yyyy", { locale: de })}
+                      {format(request.startDate, "dd. MMM", { locale: dfLocale })} -{" "}
+                      {format(request.endDate, "dd. MMM yyyy", { locale: dfLocale })}
                       <span className="mx-2">·</span>
-                      {request.totalDays} {request.totalDays === 1 ? "Tag" : "Tage"}
+                      {request.totalDays}{" "}
+                      {request.totalDays === 1 ? t("list.day") : t("list.days")}
                     </p>
                     {request.reason && (
                       <p className="text-sm text-muted-foreground mt-1">
-                        Grund: "{request.reason}"
+                        {t("approvals.reasonShown", { reason: request.reason })}
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground mt-1">
-                      Beantragt am{" "}
-                      {format(request.createdAt, "dd.MM.yyyy 'um' HH:mm", {
-                        locale: de,
+                      {t("approvals.submittedOn", {
+                        dateTime: format(request.createdAt, "Pp", { locale: dfLocale }),
                       })}
                     </p>
                   </div>
@@ -234,7 +249,7 @@ export function PendingApprovals() {
                     onClick={() => openHistory(request.id)}
                     disabled={processingId === request.id}
                   >
-                    Historie
+                    {t("approvals.history")}
                   </Button>
                   <Button
                     variant="outline"
@@ -244,7 +259,7 @@ export function PendingApprovals() {
                     disabled={processingId === request.id}
                   >
                     <XCircle className="w-4 h-4 mr-1" />
-                    Ablehnen
+                    {t("approvals.reject")}
                   </Button>
                   <Button
                     size="sm"
@@ -257,7 +272,7 @@ export function PendingApprovals() {
                     ) : (
                       <CheckCircle className="w-4 h-4 mr-1" />
                     )}
-                    Genehmigen
+                    {t("approvals.approve")}
                   </Button>
                 </div>
               </div>
@@ -266,18 +281,15 @@ export function PendingApprovals() {
         </CardContent>
       </Card>
 
-      {/* Reject Dialog */}
       <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Antrag ablehnen</DialogTitle>
-            <DialogDescription>
-              Bitte geben Sie einen Grund für die Ablehnung an.
-            </DialogDescription>
+            <DialogTitle>{t("approvals.rejectTitle")}</DialogTitle>
+            <DialogDescription>{t("approvals.rejectDescription")}</DialogDescription>
           </DialogHeader>
           <div className="py-4">
             <Input
-              placeholder="Ablehnungsgrund..."
+              placeholder={t("approvals.rejectPlaceholder")}
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
             />
@@ -288,7 +300,7 @@ export function PendingApprovals() {
               onClick={() => setRejectDialogOpen(false)}
               disabled={processingId !== null}
             >
-              Abbrechen
+              {tCommon("cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -300,20 +312,17 @@ export function PendingApprovals() {
               ) : (
                 <XCircle className="w-4 h-4 mr-1" />
               )}
-              Ablehnen
+              {t("approvals.reject")}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* History Dialog */}
       <Dialog open={historyDialogOpen} onOpenChange={setHistoryDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Historie des Antrags</DialogTitle>
-            <DialogDescription>
-              Genehmigungen und Ablehnungen dieses Urlaubsantrags.
-            </DialogDescription>
+            <DialogTitle>{t("approvals.historyTitle")}</DialogTitle>
+            <DialogDescription>{t("approvals.historyDescription")}</DialogDescription>
           </DialogHeader>
           <div className="py-3 max-h-64 overflow-y-auto text-sm">
             {historyLoading && (
@@ -325,9 +334,7 @@ export function PendingApprovals() {
               <div className="text-destructive">{historyError}</div>
             )}
             {!historyLoading && !historyError && historyLogs.length === 0 && (
-              <div className="text-muted-foreground">
-                Es sind noch keine Aktionen für diesen Antrag protokolliert.
-              </div>
+              <div className="text-muted-foreground">{t("approvals.historyEmpty")}</div>
             )}
             {!historyLoading && !historyError && historyLogs.length > 0 && (
               <ul className="space-y-2">
@@ -335,27 +342,19 @@ export function PendingApprovals() {
                   <li key={log.id} className="border-b pb-2 last:border-b-0">
                     <div className="flex items-center justify-between">
                       <span className="font-medium text-xs">
-                        {log.action === "APPROVE"
-                          ? "Genehmigt"
-                          : log.action === "REJECT"
-                          ? "Abgelehnt"
-                          : log.action === "UPDATE"
-                          ? "Aktualisiert"
-                          : log.action}
+                        {auditActionLabel(log.action, tLeave)}
                       </span>
                       <span className="text-xs text-muted-foreground">
                         {format(new Date(log.createdAt), "dd.MM.yyyy HH:mm", {
-                          locale: de,
+                          locale: dfLocale,
                         })}
                       </span>
                     </div>
                     {log.description && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {log.description}
-                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">{log.description}</p>
                     )}
                     <p className="text-xs text-muted-foreground mt-1">
-                      Von: <strong>{log.performedBy.name}</strong>
+                      {t("approvals.historyBy", { name: log.performedBy.name })}
                     </p>
                   </li>
                 ))}
@@ -364,7 +363,7 @@ export function PendingApprovals() {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setHistoryDialogOpen(false)}>
-              Schließen
+              {tCommon("close")}
             </Button>
           </DialogFooter>
         </DialogContent>

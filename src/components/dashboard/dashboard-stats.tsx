@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTimeTracking } from "@/hooks/use-time-tracking";
 import { Clock, TrendingUp, CalendarDays, Users, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export function DashboardStats() {
+  const t = useTranslations("dashboard.stats");
   const { status, isLoading } = useTimeTracking();
 
   const formatMinutes = (minutes: number) => {
@@ -47,22 +49,20 @@ export function DashboardStats() {
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Heute gearbeitet</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("workedToday")}</CardTitle>
           <Clock className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold time-display">
-            {formatMinutes(todayWorked)}
-          </div>
+          <div className="text-2xl font-bold time-display">{formatMinutes(todayWorked)}</div>
           <p className="text-xs text-muted-foreground">
-            von {formatMinutes(todayTarget)} Soll-Stunden
+            {t("ofTarget", { target: formatMinutes(todayTarget) })}
           </p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Gleitzeit-Saldo</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("flexBalance")}</CardTitle>
           <TrendingUp className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -74,24 +74,24 @@ export function DashboardStats() {
           >
             {formatMinutesSigned(flexBalance)}
           </div>
-          <p className="text-xs text-muted-foreground">Überstunden gesamt</p>
+          <p className="text-xs text-muted-foreground">{t("flexBalanceSub")}</p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Resturlaub</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("leaveRemaining")}</CardTitle>
           <CalendarDays className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">30</div>
-          <p className="text-xs text-muted-foreground">Tage verfügbar</p>
+          <p className="text-xs text-muted-foreground">{t("daysAvailable")}</p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Delta Heute</CardTitle>
+          <CardTitle className="text-sm font-medium">{t("deltaToday")}</CardTitle>
           <Users className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
@@ -103,7 +103,7 @@ export function DashboardStats() {
           >
             {formatMinutesSigned(todayDelta)}
           </div>
-          <p className="text-xs text-muted-foreground">Plus/Minus heute</p>
+          <p className="text-xs text-muted-foreground">{t("deltaSub")}</p>
         </CardContent>
       </Card>
     </div>

@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTimeTracking } from "@/hooks/use-time-tracking";
 import { TrendingUp, TrendingDown, Minus, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 
 export function FlexBalanceCard() {
+  const t = useTranslations("time.flexCard");
   const { status, isLoading } = useTimeTracking();
 
   const balanceMinutes = status?.totalFlexBalance || 0;
@@ -36,7 +38,7 @@ export function FlexBalanceCard() {
     return (
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">Gleitzeit-Saldo</CardTitle>
+          <CardTitle className="text-base">{t("title")}</CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-center py-8">
           <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -49,35 +51,30 @@ export function FlexBalanceCard() {
     <Card>
       <CardHeader className="pb-2">
         <CardTitle className="text-base flex items-center justify-between">
-          Gleitzeit-Saldo
+          {t("title")}
           {getBalanceIcon(balanceMinutes)}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {/* Total Balance */}
           <div>
             <p className={cn("text-3xl font-bold time-display", getBalanceColor(balanceMinutes))}>
               {formatMinutes(balanceMinutes)}
             </p>
-            <p className="text-sm text-muted-foreground">Stunden gesamt</p>
+            <p className="text-sm text-muted-foreground">{t("hoursTotal")}</p>
           </div>
 
-          {/* Today */}
           <div className="pt-4 border-t">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">Heute</span>
+              <span className="text-sm text-muted-foreground">{t("today")}</span>
               <span className={cn("font-medium time-display", getBalanceColor(monthDeltaMinutes))}>
                 {formatMinutes(monthDeltaMinutes)}
               </span>
             </div>
           </div>
 
-          {/* Info */}
           <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-3">
-            <p>
-              Das Gleitzeit-Saldo zeigt Ihre aufgebauten oder abzubauenden Stunden basierend auf Ihrem Arbeitszeitmodell.
-            </p>
+            <p>{t("info")}</p>
           </div>
         </div>
       </CardContent>

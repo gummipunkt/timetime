@@ -6,7 +6,9 @@
     "profile": "Perfil",
     "settings": "Ajustes",
     "logout": "Cerrar sesión",
-    "openMenu": "Abrir menú"
+    "openMenu": "Abrir menú",
+    "cancel": "Cancelar",
+    "close": "Cerrar"
   },
   "nav": {
     "dashboard": "Panel",
@@ -21,13 +23,24 @@
     "departments": "Departamentos",
     "workModels": "Modelos de trabajo",
     "holidays": "Festivos",
-    "auditLog": "Registro de auditoría"
+    "auditLog": "Registro de auditoría",
+    "settings": "Ajustes del sistema"
   },
   "dashboard": {
     "greeting": {
       "morning": "Buenos días",
       "afternoon": "Buenas tardes",
       "evening": "Buenas noches"
+    },
+    "stats": {
+      "workedToday": "Trabajado hoy",
+      "ofTarget": "de {target} horas objetivo",
+      "flexBalance": "Saldo de horas flexibles",
+      "flexBalanceSub": "Horas extra totales",
+      "leaveRemaining": "Vacaciones restantes",
+      "daysAvailable": "días disponibles",
+      "deltaToday": "Delta de hoy",
+      "deltaSub": "Más/menos hoy"
     }
   },
   "auth": {
@@ -42,6 +55,268 @@
   },
   "errors": {
     "unknown": "Ha ocurrido un error."
+  },
+  "toast": {
+    "successTitle": "Correcto",
+    "errorTitle": "Error",
+    "unknownError": "Error desconocido"
+  },
+  "landing": {
+    "badge": "Autohospedado • Código abierto • Listo para RGPD",
+    "headline": "Control horario",
+    "headlineAccent": "sin complicaciones",
+    "subheadline": "Una solución moderna para el registro de tiempo y la gestión de vacaciones. Totalmente autohospedable, con privacidad y adaptada a tus necesidades.",
+    "ctaStart": "Empezar ahora",
+    "ctaDemo": "Probar la demo",
+    "featuresHeading": "Todo lo que necesitas",
+    "featuresLead": "Un sistema completo para el control horario moderno con las funciones que tu organización necesita.",
+    "bottomTitle": "¿Listo para un control horario moderno?",
+    "bottomLead": "Empieza hoy con TimeTracker. Totalmente autohospedado, sin dependencia de la nube, control total de tus datos.",
+    "footer": "© {year} TimeTracker. Control horario de código abierto para empresas.",
+    "features": {
+      "realtime": {
+        "title": "Fichaje en tiempo real",
+        "description": "Registra entradas, salidas y pausas con un clic, con cálculo en vivo del tiempo trabajado."
+      },
+      "leave": {
+        "title": "Gestión de vacaciones",
+        "description": "Envía y aprueba solicitudes y visualízalas en el calendario del equipo."
+      },
+      "team": {
+        "title": "Gestión de equipos",
+        "description": "Administra departamentos, supervisores y modelos de jornada flexibles."
+      },
+      "flex": {
+        "title": "Horario flexible y horas extra",
+        "description": "Cálculo automático de horas objetivo vs. reales y saldo de tiempo flexible."
+      },
+      "roles": {
+        "title": "Roles y permisos",
+        "description": "Permisos detallados para administradores, supervisores y empleados."
+      },
+      "holidays": {
+        "title": "Calendario de festivos",
+        "description": "Consideración automática de festivos según la región."
+      }
+    }
+  },
+  "leave": {
+    "metaTitle": "Vacaciones",
+    "page": {
+      "title": "Gestión de vacaciones y ausencias",
+      "description": "Administre sus solicitudes de ausencia y mantenga el control.",
+      "newRequest": "Nueva solicitud",
+      "quickOverview": "Resumen rápido",
+      "statOpen": "Solicitudes abiertas",
+      "statApproved": "Aprobadas",
+      "statDaysTaken": "Días disfrutados",
+      "tabMyRequests": "Mis solicitudes",
+      "tabApprovals": "Aprobaciones",
+      "tabCalendar": "Calendario del equipo",
+      "calendarCardTitle": "Calendario del equipo",
+      "calendarPlaceholder1": "El calendario del equipo se mostrará aquí.",
+      "calendarPlaceholder2": "Vea quién está ausente y cuándo."
+    },
+    "types": {
+      "VACATION": "Vacaciones",
+      "SICK": "Baja por enfermedad",
+      "SPECIAL": "Permiso especial",
+      "UNPAID": "Permiso no retribuido",
+      "COMPENSATORY": "Compensación de horas",
+      "PARENTAL": "Permiso parental",
+      "OTHER": "Otro"
+    },
+    "formTypes": {
+      "VACATION": {
+        "label": "Vacaciones anuales",
+        "description": "Vacaciones retribuidas habituales"
+      },
+      "SICK": {
+        "label": "Enfermedad",
+        "description": "Comunicación de baja (parte médico si aplica)"
+      },
+      "SPECIAL": {
+        "label": "Permiso especial",
+        "description": "Boda, nacimiento, mudanza, etc."
+      },
+      "COMPENSATORY": {
+        "label": "Compensación de horas",
+        "description": "Compensación por horas extra"
+      },
+      "UNPAID": {
+        "label": "Permiso no retribuido",
+        "description": "Ausencia sin sueldo"
+      },
+      "PARENTAL": {
+        "label": "Permiso parental",
+        "description": "Permiso parental / protección por maternidad"
+      },
+      "OTHER": {
+        "label": "Otro",
+        "description": "Otra ausencia"
+      }
+    },
+    "status": {
+      "PENDING": "Pendiente",
+      "APPROVED": "Aprobada",
+      "REJECTED": "Rechazada",
+      "CANCELLED": "Cancelada"
+    },
+    "list": {
+      "title": "Mis solicitudes",
+      "empty": "No hay solicitudes de ausencia.",
+      "emptyHint": "Cree una nueva solicitud para empezar.",
+      "confirmCancel": "¿Seguro que desea cancelar esta solicitud?",
+      "cancelSuccess": "La solicitud ha sido cancelada.",
+      "cancel": "Cancelar solicitud",
+      "day": "día",
+      "days": "días",
+      "reasonLabel": "Motivo:",
+      "approvedBy": "Aprobada por {name} el {date}"
+    },
+    "approvals": {
+      "title": "Aprobaciones pendientes",
+      "empty": "No hay aprobaciones pendientes.",
+      "emptyHint": "Todas las solicitudes han sido procesadas.",
+      "approveSuccess": "La solicitud ha sido aprobada.",
+      "rejectSuccess": "La solicitud ha sido rechazada.",
+      "history": "Historial",
+      "reject": "Rechazar",
+      "approve": "Aprobar",
+      "reasonShown": "Motivo: «{reason}»",
+      "submittedOn": "Solicitada el {dateTime}",
+      "rejectTitle": "Rechazar solicitud",
+      "rejectDescription": "Indique un motivo para el rechazo.",
+      "rejectPlaceholder": "Motivo del rechazo…",
+      "historyTitle": "Historial de la solicitud",
+      "historyDescription": "Aprobaciones y rechazos de esta solicitud de ausencia.",
+      "historyLoadError": "No se pudo cargar el historial.",
+      "historyEmpty": "Aún no hay acciones registradas para esta solicitud.",
+      "historyBy": "Por: {name}",
+      "auditApprove": "Aprobada",
+      "auditReject": "Rechazada",
+      "auditUpdate": "Actualizada"
+    },
+    "new": {
+      "title": "Nueva solicitud de ausencia",
+      "subtitle": "Complete el formulario para enviar una solicitud.",
+      "balanceInfo": "Le quedan {remaining} días de vacaciones ({pending} pendientes, {used} usados).",
+      "formTitle": "Crear solicitud",
+      "formDescription": "Los campos marcados con * son obligatorios.",
+      "absenceType": "Tipo de ausencia *",
+      "from": "Desde *",
+      "to": "Hasta *",
+      "halfDay": "Solo medio día",
+      "estimated": "Duración estimada:",
+      "estimatedDays": "{count} días",
+      "estimatedNote": "(el cálculo exacto lo realiza el sistema)",
+      "reason": "Motivo",
+      "reasonPlaceholder": "Opcional: motivo de la solicitud…",
+      "reasonHintSonder": "Para permiso especial el motivo es obligatorio.",
+      "submit": "Enviar solicitud",
+      "submitting": "Enviando…",
+      "toastDatesRequired": "Seleccione fecha de inicio y fin.",
+      "toastSubmitted": "Su solicitud de ausencia ha sido enviada."
+    },
+    "balance": {
+      "title": "Días de vacaciones {year}",
+      "requestShort": "Solicitud",
+      "available": "días disponibles",
+      "takenLegend": "Usados: {count}",
+      "pendingLegend": "Solicitados: {count}",
+      "total": "Total: {count}",
+      "taken": "Usados",
+      "pending": "Solicitados",
+      "left": "Restantes",
+      "carryOver": "Incluye {count} días arrastrados del año anterior."
+    }
+  },
+  "time": {
+    "metaTitle": "Control horario",
+    "page": {
+      "title": "Control horario",
+      "description": "Registre su tiempo de trabajo y mantenga el control.",
+      "tabToday": "Hoy",
+      "tabMonth": "Vista mensual",
+      "tabStats": "Estadísticas",
+      "dayStatsTitle": "Estadísticas del día",
+      "workTime": "Tiempo trabajado",
+      "breakTime": "Tiempo de pausa",
+      "targetTime": "Tiempo objetivo",
+      "delta": "Delta",
+      "statsCardTitle": "Estadísticas",
+      "statsPlaceholder1": "Las estadísticas se mostrarán aquí.",
+      "statsPlaceholder2": "Gráficos y análisis de su tiempo de trabajo."
+    },
+    "clock": {
+      "statusOff": "Sin fichar",
+      "statusWorking": "Trabajando",
+      "statusBreak": "En pausa",
+      "workedToday": "Trabajado hoy",
+      "targetLabel": "Objetivo:",
+      "deltaLabel": "Delta:",
+      "clockIn": "Entrada",
+      "pause": "Pausa",
+      "clockOut": "Salida",
+      "resume": "Continuar",
+      "remainingBreak": "Pausa obligatoria pendiente:",
+      "breakToday": "Pausa hoy:",
+      "flexBalanceTotal": "Saldo flexible total:",
+      "toastIn": "Ha fichado la entrada.",
+      "toastOut": "Ha fichado la salida.",
+      "toastBreakStart": "Pausa iniciada. ¡Descanse!",
+      "toastBreakEnd": "Pausa terminada. ¡A seguir!"
+    },
+    "entryTypes": {
+      "CLOCK_IN": "Entrada",
+      "CLOCK_OUT": "Salida",
+      "BREAK_START": "Inicio pausa",
+      "BREAK_END": "Fin pausa"
+    },
+    "today": {
+      "title": "Fichajes de hoy",
+      "retry": "Volver a cargar",
+      "empty": "Aún no hay fichajes hoy.",
+      "emptyHint": "Fiche la entrada para empezar.",
+      "breakToday": "Pausa hoy",
+      "breakRequired": "Faltan {duration} de pausa obligatoria",
+      "breakFulfilled": "✓ Pausa obligatoria de {duration} cumplida",
+      "requestCorrection": "Solicitar corrección",
+      "correctionTitle": "Solicitar corrección de fichaje",
+      "correctionDescription": "Indique la hora deseada y un breve motivo.",
+      "newTime": "Nueva hora",
+      "reason": "Motivo",
+      "reasonPlaceholder": "p. ej. olvidó fichar, hora incorrecta…",
+      "submitting": "Enviando…",
+      "submitCorrection": "Enviar solicitud",
+      "toastCorrectionCreated": "Solicitud de corrección creada",
+      "toastCorrectionCreatedDesc": "Su solicitud se ha enviado a su responsable o RR. HH.",
+      "toastCorrectionError": "No se pudo crear la solicitud.",
+      "toastCorrectionErrorCreate": "No se pudo crear la solicitud de corrección."
+    },
+    "flexCard": {
+      "title": "Saldo de horas flexibles",
+      "hoursTotal": "Horas en total",
+      "today": "Hoy",
+      "info": "El saldo flexible muestra horas acumuladas o adeudadas según su modelo de trabajo."
+    },
+    "monthly": {
+      "title": "Vista mensual",
+      "today": "Hoy",
+      "worked": "Trabajado",
+      "target": "Objetivo",
+      "monthBalance": "Saldo del mes",
+      "flexTotal": "Saldo flexible total",
+      "colDay": "Día",
+      "colIn": "Entrada",
+      "colOut": "Salida",
+      "colWorked": "Trabajado",
+      "colTarget": "Objetivo",
+      "colDelta": "Delta",
+      "legendToday": "Hoy",
+      "legendHoliday": "Festivo",
+      "legendLeave": "Vacaciones",
+      "legendWeekend": "Fin de semana"
+    }
   }
 }
-

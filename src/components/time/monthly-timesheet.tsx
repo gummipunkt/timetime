@@ -10,11 +10,11 @@ import {
   Calendar,
   Loader2,
   Sun,
-  Umbrella,
   Plane,
 } from "lucide-react";
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, isSameMonth } from "date-fns";
-import { de } from "date-fns/locale";
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday } from "date-fns";
+import { useLocale, useTranslations } from "next-intl";
+import { getDateFnsLocale } from "@/lib/date-fns-locale";
 
 interface DaySummary {
   date: string;
@@ -41,6 +41,9 @@ interface MonthStats {
 }
 
 export function MonthlyTimesheet() {
+  const locale = useLocale();
+  const dfLocale = getDateFnsLocale(locale);
+  const t = useTranslations("time.monthly");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [summaries, setSummaries] = useState<DaySummary[]>([]);
   const [stats, setStats] = useState<MonthStats | null>(null);
@@ -109,7 +112,6 @@ export function MonthlyTimesheet() {
 
   const summaryMap = new Map(summaries.map((s) => [s.date, s]));
 
-  // Alle Tage des Monats
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
@@ -119,17 +121,17 @@ export function MonthlyTimesheet() {
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
         <CardTitle className="flex items-center gap-2">
           <Calendar className="w-5 h-5" />
-          Monatsübersicht
+          {t("title")}
         </CardTitle>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={previousMonth}>
             <ChevronLeft className="w-4 h-4" />
           </Button>
           <Button variant="outline" onClick={goToToday}>
-            Heute
+            {t("today")}
           </Button>
           <div className="w-40 text-center font-medium">
-            {format(currentDate, "MMMM yyyy", { locale: de })}
+            {format(currentDate, "MMMM yyyy", { locale: dfLocale })}
           </div>
           <Button variant="outline" size="icon" onClick={nextMonth}>
             <ChevronRight className="w-4 h-4" />
@@ -143,23 +145,22 @@ export function MonthlyTimesheet() {
           </div>
         ) : (
           <>
-            {/* Stats Overview */}
             {stats && (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-muted/50 rounded-lg">
                 <div>
-                  <p className="text-sm text-muted-foreground">Gearbeitet</p>
+                  <p className="text-sm text-muted-foreground">{t("worked")}</p>
                   <p className="text-xl font-bold time-display">
                     {formatMinutes(stats.totalWorkedMinutes)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Soll</p>
+                  <p className="text-sm text-muted-foreground">{t("target")}</p>
                   <p className="text-xl font-bold time-display">
                     {formatMinutes(stats.totalTargetMinutes)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Monatssaldo</p>
+                  <p className="text-sm text-muted-foreground">{t("monthBalance")}</p>
                   <p
                     className={cn(
                       "text-xl font-bold time-display",
@@ -170,7 +171,7 @@ export function MonthlyTimesheet() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Gleitzeit gesamt</p>
+                  <p className="text-sm text-muted-foreground">{t("flexTotal")}</p>
                   <p
                     className={cn(
                       "text-xl font-bold time-display",
@@ -183,24 +184,23 @@ export function MonthlyTimesheet() {
               </div>
             )}
 
-            {/* Days Table */}
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b">
-                    <th className="text-left py-2 px-3 font-medium">Tag</th>
-                    <th className="text-center py-2 px-3 font-medium">Kommen</th>
-                    <th className="text-center py-2 px-3 font-medium">Gehen</th>
-                    <th className="text-right py-2 px-3 font-medium">Arbeitszeit</th>
-                    <th className="text-right py-2 px-3 font-medium">Soll</th>
-                    <th className="text-right py-2 px-3 font-medium">Delta</th>
+                    <th className="text-left py-2 px-3 font-medium">{t("colDay")}</th>
+                    <th className="text-center py-2 px-3 font-medium">{t("colIn")}</th>
+                    <th className="text-center py-2 px-3 font-medium">{t("colOut")}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t("colWorked")}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t("colTarget")}</th>
+                    <th className="text-right py-2 px-3 font-medium">{t("colDelta")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {daysInMonth.map((day) => {
                     const dateStr = format(day, "yyyy-MM-dd");
                     const summary = summaryMap.get(dateStr);
-                    const dayOfWeek = format(day, "EEE", { locale: de });
+                    const dayOfWeek = format(day, "EEE", { locale: dfLocale });
                     const dayNum = format(day, "d");
 
                     if (!summary) {
@@ -228,9 +228,9 @@ export function MonthlyTimesheet() {
                       >
                         <td className="py-2 px-3">
                           <div className="flex items-center gap-2">
-                            <span className={cn(
-                              summary.isWeekend && "text-muted-foreground"
-                            )}>
+                            <span
+                              className={cn(summary.isWeekend && "text-muted-foreground")}
+                            >
                               {dayOfWeek}, {dayNum}.
                             </span>
                             {summary.isHoliday && (
@@ -285,23 +285,22 @@ export function MonthlyTimesheet() {
               </table>
             </div>
 
-            {/* Legend */}
             <div className="flex flex-wrap gap-4 mt-4 pt-4 border-t text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-primary/10 border border-primary" />
-                <span>Heute</span>
+                <span>{t("legendToday")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Sun className="w-4 h-4 text-amber-500" />
-                <span>Feiertag</span>
+                <span>{t("legendHoliday")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Plane className="w-4 h-4 text-blue-500" />
-                <span>Urlaub</span>
+                <span>{t("legendLeave")}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-muted/50" />
-                <span>Wochenende</span>
+                <span>{t("legendWeekend")}</span>
               </div>
             </div>
           </>

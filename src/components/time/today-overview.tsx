@@ -19,8 +19,26 @@ import {
 import { Textarea } from "../ui/textarea";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useLocale, useTranslations } from "next-intl";
+import { getIntlLocale } from "@/lib/date-fns-locale";
+
+function entryTypeLabel(type: TimeEntryType, t: (key: string) => string) {
+  const m: Record<TimeEntryType, string> = {
+    CLOCK_IN: t("entryTypes.CLOCK_IN"),
+    CLOCK_OUT: t("entryTypes.CLOCK_OUT"),
+    BREAK_START: t("entryTypes.BREAK_START"),
+    BREAK_END: t("entryTypes.BREAK_END"),
+  };
+  return m[type];
+}
 
 export function TodayOverview() {
+  const locale = useLocale();
+  const intlLocale = getIntlLocale(locale);
+  const t = useTranslations("time");
+  const tToday = useTranslations("time.today");
+  const tToast = useTranslations("toast");
+  const tCommon = useTranslations("common");
   const { status, isLoading, error, refresh } = useTimeTracking();
   const { toast } = useToast();
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
@@ -48,23 +66,10 @@ export function TodayOverview() {
     }
   };
 
-  const getLabel = (type: TimeEntryType) => {
-    switch (type) {
-      case TimeEntryType.CLOCK_IN:
-        return "Kommen";
-      case TimeEntryType.CLOCK_OUT:
-        return "Gehen";
-      case TimeEntryType.BREAK_START:
-        return "Pause Start";
-      case TimeEntryType.BREAK_END:
-        return "Pause Ende";
-    }
-  };
-
   const openCorrectionDialog = (entryId: string, ts: string) => {
     setSelectedEntryId(entryId);
     const d = new Date(ts);
-    setCorrectionTimestamp(d.toISOString().slice(0, 16)); // yyyy-MM-ddTHH:mm
+    setCorrectionTimestamp(d.toISOString().slice(0, 16));
     setCorrectionReason("");
     setCorrectionOpen(true);
   };
@@ -88,18 +93,18 @@ export function TodayOverview() {
       });
       const data = await res.json();
       if (!res.ok || !data.success) {
-        throw new Error(data.error || "Antrag konnte nicht erstellt werden.");
+        throw new Error(data.error || tToday("toastCorrectionError"));
       }
       toast({
-        title: "Korrekturantrag erstellt",
-        description: "Ihr Antrag wurde zur Prüfung an Ihre Führungskraft/HR gesendet.",
+        title: tToday("toastCorrectionCreated"),
+        description: tToday("toastCorrectionCreatedDesc"),
       });
       setCorrectionOpen(false);
     } catch (error) {
       toast({
-        title: "Fehler",
+        title: tToast("errorTitle"),
         description:
-          error instanceof Error ? error.message : "Korrekturantrag konnte nicht erstellt werden.",
+          error instanceof Error ? error.message : tToday("toastCorrectionErrorCreate"),
         variant: "destructive",
       });
     } finally {
@@ -107,13 +112,15 @@ export function TodayOverview() {
     }
   };
 
+  const tLeave = t as unknown as (key: string) => string;
+
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Clock className="w-5 h-5" />
-            Heutige Stempelungen
+            {tToday("title")}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -136,7 +143,7 @@ export function TodayOverview() {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Clock className="w-5 h-5" />
-          Heutige Stempelungen
+          {tToday("title")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -144,25 +151,24 @@ export function TodayOverview() {
           <div className="mb-4 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-center justify-between gap-2">
             <span>{error}</span>
             <Button variant="outline" size="sm" onClick={() => refresh()}>
-              Erneut laden
+              {tToday("retry")}
             </Button>
           </div>
         )}
         {!error && entries.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
             <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>Noch keine Stempelungen heute.</p>
-            <p className="text-sm">Stempeln Sie sich ein, um zu beginnen.</p>
+            <p>{tToday("empty")}</p>
+            <p className="text-sm">{tToday("emptyHint")}</p>
           </div>
         )}
         {!error && entries.length > 0 && (
           <div className="space-y-4">
-            {/* Pause Summary */}
             <div className="p-3 rounded-lg bg-muted/50 border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Coffee className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Pause heute</span>
+                  <span className="text-sm font-medium">{tToday("breakToday")}</span>
                 </div>
                 <Badge variant="secondary" className="font-mono">
                   {formatMinutes(breakMinutes)}
@@ -172,18 +178,17 @@ export function TodayOverview() {
                 <div className="flex items-center gap-2 mt-2 text-warning">
                   <AlertTriangle className="w-4 h-4" />
                   <span className="text-sm">
-                    Noch {formatMinutes(remainingBreak)} Pause erforderlich
+                    {tToday("breakRequired", { duration: formatMinutes(remainingBreak) })}
                   </span>
                 </div>
               )}
               {requiredBreak > 0 && remainingBreak === 0 && (
                 <div className="text-xs text-muted-foreground mt-1">
-                  ✓ Pflichtpause von {formatMinutes(requiredBreak)} erfüllt
+                  {tToday("breakFulfilled", { duration: formatMinutes(requiredBreak) })}
                 </div>
               )}
             </div>
 
-            {/* Entries List */}
             <div className="space-y-2">
               {entries.map((entry) => (
                 <div
@@ -194,14 +199,16 @@ export function TodayOverview() {
                     {getIcon(entry.type)}
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-sm">{getLabel(entry.type)}</p>
+                    <p className="font-medium text-sm">
+                      {entryTypeLabel(entry.type, tLeave)}
+                    </p>
                     {entry.note && (
                       <p className="text-xs text-muted-foreground">{entry.note}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
                     <p className="font-mono text-sm">
-                      {new Date(entry.timestamp).toLocaleTimeString("de-DE", {
+                      {new Date(entry.timestamp).toLocaleTimeString(intlLocale, {
                         hour: "2-digit",
                         minute: "2-digit",
                       })}
@@ -210,9 +217,11 @@ export function TodayOverview() {
                       variant="outline"
                       size="sm"
                       className="text-xs"
-                      onClick={() => openCorrectionDialog(entry.id, entry.timestamp as unknown as string)}
+                      onClick={() =>
+                        openCorrectionDialog(entry.id, entry.timestamp as unknown as string)
+                      }
                     >
-                      Korrektur beantragen
+                      {tToday("requestCorrection")}
                     </Button>
                   </div>
                 </div>
@@ -225,14 +234,12 @@ export function TodayOverview() {
         <DialogContent>
           <form onSubmit={submitCorrection}>
             <DialogHeader>
-              <DialogTitle>Korrektur der Stempelzeit beantragen</DialogTitle>
-              <DialogDescription>
-                Geben Sie die gewünschte Zeit und eine kurze Begründung für die Korrektur an.
-              </DialogDescription>
+              <DialogTitle>{tToday("correctionTitle")}</DialogTitle>
+              <DialogDescription>{tToday("correctionDescription")}</DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-1">
-                <label className="text-sm font-medium">Neue Zeit</label>
+                <label className="text-sm font-medium">{tToday("newTime")}</label>
                 <Input
                   type="datetime-local"
                   value={correctionTimestamp}
@@ -243,28 +250,24 @@ export function TodayOverview() {
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-sm font-medium">Begründung</label>
+                <label className="text-sm font-medium">{tToday("reason")}</label>
                 <Textarea
                   value={correctionReason}
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                     setCorrectionReason(e.target.value)
                   }
                   rows={3}
-                  placeholder="z.B. Vergessen zu stempeln, falsche Uhrzeit erfasst..."
+                  placeholder={tToday("reasonPlaceholder")}
                   required
                 />
               </div>
             </div>
             <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setCorrectionOpen(false)}
-              >
-                Abbrechen
+              <Button type="button" variant="outline" onClick={() => setCorrectionOpen(false)}>
+                {tCommon("cancel")}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Wird gesendet..." : "Korrekturantrag senden"}
+                {isSubmitting ? tToday("submitting") : tToday("submitCorrection")}
               </Button>
             </DialogFooter>
           </form>

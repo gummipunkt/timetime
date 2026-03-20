@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CalendarPlus, CalendarDays, Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 
 interface LeaveBalance {
   year: number;
@@ -16,6 +17,9 @@ interface LeaveBalance {
 }
 
 export function LeaveBalanceCard() {
+  const locale = useLocale();
+  const t = useTranslations("leave.balance");
+  const year = new Date().getFullYear();
   const [balance, setBalance] = useState<LeaveBalance | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -43,7 +47,7 @@ export function LeaveBalanceCard() {
         <CardHeader className="pb-2">
           <CardTitle className="text-base flex items-center gap-2">
             <CalendarDays className="w-5 h-5" />
-            Urlaubstage {new Date().getFullYear()}
+            {t("title", { year })}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-center py-8">
@@ -67,25 +71,23 @@ export function LeaveBalanceCard() {
         <CardTitle className="text-base flex items-center justify-between">
           <span className="flex items-center gap-2">
             <CalendarDays className="w-5 h-5" />
-            Urlaubstage {new Date().getFullYear()}
+            {t("title", { year })}
           </span>
-          <Link href="/leave/new">
+          <Link href={`/${locale}/leave/new`}>
             <Button size="sm" variant="outline">
               <CalendarPlus className="w-4 h-4 mr-1" />
-              Antrag
+              {t("requestShort")}
             </Button>
           </Link>
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {/* Remaining Days */}
           <div>
             <p className="text-3xl font-bold text-primary">{remainingDays}</p>
-            <p className="text-sm text-muted-foreground">Tage verfügbar</p>
+            <p className="text-sm text-muted-foreground">{t("available")}</p>
           </div>
 
-          {/* Progress Bar */}
           <div className="space-y-2">
             <div className="h-3 bg-muted rounded-full overflow-hidden flex">
               <div
@@ -98,46 +100,41 @@ export function LeaveBalanceCard() {
               />
             </div>
 
-            {/* Legend */}
             <div className="flex justify-between text-xs text-muted-foreground">
               <div className="flex items-center gap-4">
                 <span className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-primary" />
-                  Genommen: {usedDays}
+                  {t("takenLegend", { count: usedDays })}
                 </span>
                 {pendingDays > 0 && (
                   <span className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-warning" />
-                    Beantragt: {pendingDays}
+                    {t("pendingLegend", { count: pendingDays })}
                   </span>
                 )}
               </div>
-              <span>Gesamt: {totalDays}</span>
+              <span>{t("total", { count: totalDays })}</span>
             </div>
           </div>
 
-          {/* Quick Stats */}
           <div className="grid grid-cols-3 gap-2 pt-2 border-t">
             <div className="text-center">
               <p className="text-lg font-semibold">{usedDays}</p>
-              <p className="text-xs text-muted-foreground">Genommen</p>
+              <p className="text-xs text-muted-foreground">{t("taken")}</p>
             </div>
             <div className="text-center">
               <p className="text-lg font-semibold text-warning">{pendingDays}</p>
-              <p className="text-xs text-muted-foreground">Beantragt</p>
+              <p className="text-xs text-muted-foreground">{t("pending")}</p>
             </div>
             <div className="text-center">
               <p className="text-lg font-semibold text-primary">{remainingDays}</p>
-              <p className="text-xs text-muted-foreground">Übrig</p>
+              <p className="text-xs text-muted-foreground">{t("left")}</p>
             </div>
           </div>
 
-          {/* Carry Over Info */}
           {balance && balance.carryOver > 0 && (
             <div className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-3">
-              <p>
-                Inkl. {balance.carryOver} Resttage aus dem Vorjahr.
-              </p>
+              <p>{t("carryOver", { count: balance.carryOver })}</p>
             </div>
           )}
         </div>

@@ -6,7 +6,9 @@
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Sign out",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "cancel": "Cancel",
+    "close": "Close"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -21,13 +23,24 @@
     "departments": "Departments",
     "workModels": "Work models",
     "holidays": "Holidays",
-    "auditLog": "Audit log"
+    "auditLog": "Audit log",
+    "settings": "System settings"
   },
   "dashboard": {
     "greeting": {
       "morning": "Good morning",
       "afternoon": "Good afternoon",
       "evening": "Good evening"
+    },
+    "stats": {
+      "workedToday": "Worked today",
+      "ofTarget": "of {target} target hours",
+      "flexBalance": "Flex-time balance",
+      "flexBalanceSub": "Overtime total",
+      "leaveRemaining": "Leave remaining",
+      "daysAvailable": "days available",
+      "deltaToday": "Today’s delta",
+      "deltaSub": "Plus/minus today"
     }
   },
   "auth": {
@@ -42,6 +55,268 @@
   },
   "errors": {
     "unknown": "Something went wrong."
+  },
+  "toast": {
+    "successTitle": "Success",
+    "errorTitle": "Error",
+    "unknownError": "Unknown error"
+  },
+  "landing": {
+    "badge": "Self-hosted • Open source • GDPR-ready",
+    "headline": "Time tracking",
+    "headlineAccent": "made simple",
+    "subheadline": "A modern solution for time tracking and leave management. Fully self-hostable, privacy-conscious, and tailored to your needs.",
+    "ctaStart": "Get started",
+    "ctaDemo": "Try the demo",
+    "featuresHeading": "Everything you need",
+    "featuresLead": "A complete system for modern time tracking with the features your organization relies on.",
+    "bottomTitle": "Ready for modern time tracking?",
+    "bottomLead": "Get started with TimeTracker today. Fully self-hosted, no cloud lock-in, full control of your data.",
+    "footer": "© {year} TimeTracker. Open-source time tracking for businesses.",
+    "features": {
+      "realtime": {
+        "title": "Real-time clocking",
+        "description": "Record arrivals, departures, and breaks in one click—with live working time calculation."
+      },
+      "leave": {
+        "title": "Leave management",
+        "description": "Submit and approve requests and visualize them on the team calendar."
+      },
+      "team": {
+        "title": "Team management",
+        "description": "Manage departments, supervisors, and flexible working time models."
+      },
+      "flex": {
+        "title": "Flex time & overtime",
+        "description": "Automatic calculation of target vs. actual hours and flex-time balance."
+      },
+      "roles": {
+        "title": "Roles & permissions",
+        "description": "Fine-grained access for admins, supervisors, and employees."
+      },
+      "holidays": {
+        "title": "Holiday calendar",
+        "description": "Automatic handling of public holidays by region."
+      }
+    }
+  },
+  "leave": {
+    "metaTitle": "Leave",
+    "page": {
+      "title": "Leave management",
+      "description": "Manage your leave requests and stay on top of your balance.",
+      "newRequest": "New request",
+      "quickOverview": "Quick overview",
+      "statOpen": "Open requests",
+      "statApproved": "Approved",
+      "statDaysTaken": "Days taken",
+      "tabMyRequests": "My requests",
+      "tabApprovals": "Approvals",
+      "tabCalendar": "Team calendar",
+      "calendarCardTitle": "Team calendar",
+      "calendarPlaceholder1": "The team calendar will appear here.",
+      "calendarPlaceholder2": "See who is away and when."
+    },
+    "types": {
+      "VACATION": "Vacation",
+      "SICK": "Sick leave",
+      "SPECIAL": "Special leave",
+      "UNPAID": "Unpaid leave",
+      "COMPENSATORY": "Time off in lieu",
+      "PARENTAL": "Parental leave",
+      "OTHER": "Other"
+    },
+    "formTypes": {
+      "VACATION": {
+        "label": "Annual leave",
+        "description": "Regular paid vacation"
+      },
+      "SICK": {
+        "label": "Sick leave",
+        "description": "Sickness notification (medical certificate if required)"
+      },
+      "SPECIAL": {
+        "label": "Special leave",
+        "description": "Wedding, birth, moving, etc."
+      },
+      "COMPENSATORY": {
+        "label": "Time off in lieu",
+        "description": "Compensating overtime"
+      },
+      "UNPAID": {
+        "label": "Unpaid leave",
+        "description": "Leave without pay"
+      },
+      "PARENTAL": {
+        "label": "Parental leave",
+        "description": "Parental leave / maternity protection"
+      },
+      "OTHER": {
+        "label": "Other",
+        "description": "Other absence"
+      }
+    },
+    "status": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected",
+      "CANCELLED": "Cancelled"
+    },
+    "list": {
+      "title": "My requests",
+      "empty": "No leave requests yet.",
+      "emptyHint": "Create a new request to get started.",
+      "confirmCancel": "Are you sure you want to cancel this request?",
+      "cancelSuccess": "The request was cancelled.",
+      "cancel": "Cancel request",
+      "day": "day",
+      "days": "days",
+      "reasonLabel": "Reason:",
+      "approvedBy": "Approved by {name} on {date}"
+    },
+    "approvals": {
+      "title": "Pending approvals",
+      "empty": "No pending approvals.",
+      "emptyHint": "All requests have been processed.",
+      "approveSuccess": "The request was approved.",
+      "rejectSuccess": "The request was rejected.",
+      "history": "History",
+      "reject": "Reject",
+      "approve": "Approve",
+      "reasonShown": "Reason: “{reason}”",
+      "submittedOn": "Submitted on {dateTime}",
+      "rejectTitle": "Reject request",
+      "rejectDescription": "Please provide a reason for rejection.",
+      "rejectPlaceholder": "Reason for rejection…",
+      "historyTitle": "Request history",
+      "historyDescription": "Approvals and rejections for this leave request.",
+      "historyLoadError": "Could not load history.",
+      "historyEmpty": "No actions have been logged for this request yet.",
+      "historyBy": "By: {name}",
+      "auditApprove": "Approved",
+      "auditReject": "Rejected",
+      "auditUpdate": "Updated"
+    },
+    "new": {
+      "title": "New leave request",
+      "subtitle": "Fill in the form to submit a request.",
+      "balanceInfo": "You have {remaining} vacation days left ({pending} pending, {used} used).",
+      "formTitle": "Create request",
+      "formDescription": "Fields marked * are required.",
+      "absenceType": "Type of absence *",
+      "from": "From *",
+      "to": "To *",
+      "halfDay": "Half day only",
+      "estimated": "Estimated duration:",
+      "estimatedDays": "{count} days",
+      "estimatedNote": "(exact calculation is done by the system)",
+      "reason": "Reason",
+      "reasonPlaceholder": "Optional: reason for the request…",
+      "reasonHintSonder": "A reason is required for special leave.",
+      "submit": "Submit request",
+      "submitting": "Submitting…",
+      "toastDatesRequired": "Please select start and end dates.",
+      "toastSubmitted": "Your leave request has been submitted."
+    },
+    "balance": {
+      "title": "Leave days {year}",
+      "requestShort": "Request",
+      "available": "days available",
+      "takenLegend": "Taken: {count}",
+      "pendingLegend": "Pending: {count}",
+      "total": "Total: {count}",
+      "taken": "Taken",
+      "pending": "Pending",
+      "left": "Left",
+      "carryOver": "Includes {count} days carried over from last year."
+    }
+  },
+  "time": {
+    "metaTitle": "Time tracking",
+    "page": {
+      "title": "Time tracking",
+      "description": "Record your working time and stay on top of your hours.",
+      "tabToday": "Today",
+      "tabMonth": "Month view",
+      "tabStats": "Statistics",
+      "dayStatsTitle": "Daily statistics",
+      "workTime": "Working time",
+      "breakTime": "Break time",
+      "targetTime": "Target time",
+      "delta": "Delta",
+      "statsCardTitle": "Statistics",
+      "statsPlaceholder1": "Statistics will appear here.",
+      "statsPlaceholder2": "Charts and analysis of your working time."
+    },
+    "clock": {
+      "statusOff": "Not clocked in",
+      "statusWorking": "Working",
+      "statusBreak": "On break",
+      "workedToday": "Worked today",
+      "targetLabel": "Target:",
+      "deltaLabel": "Delta:",
+      "clockIn": "Clock in",
+      "pause": "Break",
+      "clockOut": "Clock out",
+      "resume": "Resume",
+      "remainingBreak": "Break time still required:",
+      "breakToday": "Break today:",
+      "flexBalanceTotal": "Total flex-time balance:",
+      "toastIn": "You are now clocked in.",
+      "toastOut": "You are now clocked out.",
+      "toastBreakStart": "Break started. Enjoy your rest!",
+      "toastBreakEnd": "Break ended. Back to work!"
+    },
+    "entryTypes": {
+      "CLOCK_IN": "Clock in",
+      "CLOCK_OUT": "Clock out",
+      "BREAK_START": "Break start",
+      "BREAK_END": "Break end"
+    },
+    "today": {
+      "title": "Today’s punches",
+      "retry": "Reload",
+      "empty": "No punches yet today.",
+      "emptyHint": "Clock in to get started.",
+      "breakToday": "Break today",
+      "breakRequired": "{duration} more break required",
+      "breakFulfilled": "✓ Required break of {duration} fulfilled",
+      "requestCorrection": "Request correction",
+      "correctionTitle": "Request time correction",
+      "correctionDescription": "Enter the desired time and a short reason for the correction.",
+      "newTime": "New time",
+      "reason": "Reason",
+      "reasonPlaceholder": "e.g. forgot to punch, wrong time recorded…",
+      "submitting": "Sending…",
+      "submitCorrection": "Submit correction request",
+      "toastCorrectionCreated": "Correction request created",
+      "toastCorrectionCreatedDesc": "Your request has been sent to your manager or HR for review.",
+      "toastCorrectionError": "Could not create the request.",
+      "toastCorrectionErrorCreate": "Could not create the correction request."
+    },
+    "flexCard": {
+      "title": "Flex-time balance",
+      "hoursTotal": "Hours total",
+      "today": "Today",
+      "info": "The flex-time balance shows hours built up or owed based on your work-time model."
+    },
+    "monthly": {
+      "title": "Monthly overview",
+      "today": "Today",
+      "worked": "Worked",
+      "target": "Target",
+      "monthBalance": "Month balance",
+      "flexTotal": "Flex balance total",
+      "colDay": "Day",
+      "colIn": "In",
+      "colOut": "Out",
+      "colWorked": "Worked",
+      "colTarget": "Target",
+      "colDelta": "Delta",
+      "legendToday": "Today",
+      "legendHoliday": "Public holiday",
+      "legendLeave": "Leave",
+      "legendWeekend": "Weekend"
+    }
   }
 }
-

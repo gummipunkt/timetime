@@ -6,7 +6,9 @@
     "profile": "Profil",
     "settings": "Einstellungen",
     "logout": "Abmelden",
-    "openMenu": "Menü öffnen"
+    "openMenu": "Menü öffnen",
+    "cancel": "Abbrechen",
+    "close": "Schließen"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -21,13 +23,24 @@
     "departments": "Abteilungen",
     "workModels": "Arbeitszeitmodelle",
     "holidays": "Feiertage",
-    "auditLog": "Audit-Log"
+    "auditLog": "Audit-Log",
+    "settings": "Systemeinstellungen"
   },
   "dashboard": {
     "greeting": {
       "morning": "Guten Morgen",
       "afternoon": "Guten Tag",
       "evening": "Guten Abend"
+    },
+    "stats": {
+      "workedToday": "Heute gearbeitet",
+      "ofTarget": "von {target} Soll-Stunden",
+      "flexBalance": "Gleitzeit-Saldo",
+      "flexBalanceSub": "Überstunden gesamt",
+      "leaveRemaining": "Resturlaub",
+      "daysAvailable": "Tage verfügbar",
+      "deltaToday": "Delta Heute",
+      "deltaSub": "Plus/Minus heute"
     }
   },
   "auth": {
@@ -42,6 +55,268 @@
   },
   "errors": {
     "unknown": "Ein Fehler ist aufgetreten."
+  },
+  "toast": {
+    "successTitle": "Erfolg",
+    "errorTitle": "Fehler",
+    "unknownError": "Unbekannter Fehler"
+  },
+  "landing": {
+    "badge": "Self-Hosted • Open Source • DSGVO-konform",
+    "headline": "Zeiterfassung",
+    "headlineAccent": "einfach gemacht",
+    "subheadline": "Die moderne Lösung für Arbeitszeiterfassung und Urlaubsverwaltung. Komplett selbst hostbar, datenschutzkonform und auf Ihre Bedürfnisse zugeschnitten.",
+    "ctaStart": "Jetzt starten",
+    "ctaDemo": "Demo starten",
+    "featuresHeading": "Alles was Sie brauchen",
+    "featuresLead": "Ein umfassendes System für moderne Arbeitszeiterfassung mit allen Features, die Ihr Unternehmen benötigt.",
+    "bottomTitle": "Bereit für moderne Zeiterfassung?",
+    "bottomLead": "Starten Sie noch heute mit TimeTracker. Vollständig selbst hostbar, keine Cloud-Abhängigkeit, volle Kontrolle über Ihre Daten.",
+    "footer": "© {year} TimeTracker. Open Source Zeiterfassung für Unternehmen.",
+    "features": {
+      "realtime": {
+        "title": "Echtzeit-Stempeln",
+        "description": "Kommen, Gehen und Pausen mit einem Klick erfassen. Live-Berechnung der Arbeitszeit."
+      },
+      "leave": {
+        "title": "Urlaubsverwaltung",
+        "description": "Anträge stellen, genehmigen und im Team-Kalender visualisieren."
+      },
+      "team": {
+        "title": "Team-Management",
+        "description": "Abteilungen, Vorgesetzte und flexible Arbeitszeitmodelle verwalten."
+      },
+      "flex": {
+        "title": "Gleitzeit & Überstunden",
+        "description": "Automatische Berechnung von Soll/Ist-Zeiten und Gleitzeitsaldo."
+      },
+      "roles": {
+        "title": "Rollen & Rechte",
+        "description": "Granulare Berechtigungen für Admin, Supervisor und Mitarbeiter."
+      },
+      "holidays": {
+        "title": "Feiertags-Kalender",
+        "description": "Automatische Berücksichtigung gesetzlicher Feiertage nach Bundesland."
+      }
+    }
+  },
+  "leave": {
+    "metaTitle": "Urlaub",
+    "page": {
+      "title": "Urlaubsverwaltung",
+      "description": "Verwalten Sie Ihre Urlaubsanträge und behalten Sie den Überblick.",
+      "newRequest": "Neuer Antrag",
+      "quickOverview": "Schnellübersicht",
+      "statOpen": "Offene Anträge",
+      "statApproved": "Genehmigt",
+      "statDaysTaken": "Tage genommen",
+      "tabMyRequests": "Meine Anträge",
+      "tabApprovals": "Genehmigungen",
+      "tabCalendar": "Team-Kalender",
+      "calendarCardTitle": "Team-Kalender",
+      "calendarPlaceholder1": "Der Team-Kalender wird hier angezeigt.",
+      "calendarPlaceholder2": "Sehen Sie, wer wann abwesend ist."
+    },
+    "types": {
+      "VACATION": "Urlaub",
+      "SICK": "Krankheit",
+      "SPECIAL": "Sonderurlaub",
+      "UNPAID": "Unbezahlt",
+      "COMPENSATORY": "Überstundenausgleich",
+      "PARENTAL": "Elternzeit",
+      "OTHER": "Sonstiges"
+    },
+    "formTypes": {
+      "VACATION": {
+        "label": "Erholungsurlaub",
+        "description": "Regulärer bezahlter Urlaub"
+      },
+      "SICK": {
+        "label": "Krankheit",
+        "description": "Krankmeldung (ggf. mit AU)"
+      },
+      "SPECIAL": {
+        "label": "Sonderurlaub",
+        "description": "Hochzeit, Geburt, Umzug, etc."
+      },
+      "COMPENSATORY": {
+        "label": "Überstundenausgleich",
+        "description": "Ausgleich von Überstunden"
+      },
+      "UNPAID": {
+        "label": "Unbezahlter Urlaub",
+        "description": "Urlaub ohne Gehalt"
+      },
+      "PARENTAL": {
+        "label": "Elternzeit",
+        "description": "Elternzeit / Mutterschutz"
+      },
+      "OTHER": {
+        "label": "Sonstiges",
+        "description": "Andere Abwesenheit"
+      }
+    },
+    "status": {
+      "PENDING": "Ausstehend",
+      "APPROVED": "Genehmigt",
+      "REJECTED": "Abgelehnt",
+      "CANCELLED": "Storniert"
+    },
+    "list": {
+      "title": "Meine Anträge",
+      "empty": "Keine Urlaubsanträge vorhanden.",
+      "emptyHint": "Erstellen Sie einen neuen Antrag, um zu beginnen.",
+      "confirmCancel": "Möchten Sie diesen Antrag wirklich stornieren?",
+      "cancelSuccess": "Antrag wurde storniert.",
+      "cancel": "Stornieren",
+      "day": "Tag",
+      "days": "Tage",
+      "reasonLabel": "Grund:",
+      "approvedBy": "Genehmigt von {name} am {date}"
+    },
+    "approvals": {
+      "title": "Ausstehende Genehmigungen",
+      "empty": "Keine ausstehenden Genehmigungen.",
+      "emptyHint": "Alle Anträge wurden bearbeitet.",
+      "approveSuccess": "Antrag wurde genehmigt.",
+      "rejectSuccess": "Antrag wurde abgelehnt.",
+      "history": "Historie",
+      "reject": "Ablehnen",
+      "approve": "Genehmigen",
+      "reasonShown": "Grund: „{reason}“",
+      "submittedOn": "Beantragt am {dateTime}",
+      "rejectTitle": "Antrag ablehnen",
+      "rejectDescription": "Bitte geben Sie einen Grund für die Ablehnung an.",
+      "rejectPlaceholder": "Ablehnungsgrund…",
+      "historyTitle": "Historie des Antrags",
+      "historyDescription": "Genehmigungen und Ablehnungen dieses Urlaubsantrags.",
+      "historyLoadError": "Historie konnte nicht geladen werden.",
+      "historyEmpty": "Es sind noch keine Aktionen für diesen Antrag protokolliert.",
+      "historyBy": "Von: {name}",
+      "auditApprove": "Genehmigt",
+      "auditReject": "Abgelehnt",
+      "auditUpdate": "Aktualisiert"
+    },
+    "new": {
+      "title": "Neuer Urlaubsantrag",
+      "subtitle": "Füllen Sie das Formular aus, um einen Antrag zu stellen.",
+      "balanceInfo": "Sie haben noch {remaining} Urlaubstage verfügbar ({pending} beantragt, {used} genommen).",
+      "formTitle": "Antrag erstellen",
+      "formDescription": "Alle Felder mit * sind Pflichtfelder.",
+      "absenceType": "Art der Abwesenheit *",
+      "from": "Von *",
+      "to": "Bis *",
+      "halfDay": "Nur halber Tag",
+      "estimated": "Geschätzte Dauer:",
+      "estimatedDays": "{count} Tage",
+      "estimatedNote": "(genaue Berechnung erfolgt durch das System)",
+      "reason": "Begründung",
+      "reasonPlaceholder": "Optional: Grund für den Antrag…",
+      "reasonHintSonder": "Bei Sonderurlaub ist eine Begründung erforderlich.",
+      "submit": "Antrag einreichen",
+      "submitting": "Wird eingereicht…",
+      "toastDatesRequired": "Bitte wählen Sie Start- und Enddatum.",
+      "toastSubmitted": "Ihr Urlaubsantrag wurde eingereicht."
+    },
+    "balance": {
+      "title": "Urlaubstage {year}",
+      "requestShort": "Antrag",
+      "available": "Tage verfügbar",
+      "takenLegend": "Genommen: {count}",
+      "pendingLegend": "Beantragt: {count}",
+      "total": "Gesamt: {count}",
+      "taken": "Genommen",
+      "pending": "Beantragt",
+      "left": "Übrig",
+      "carryOver": "Inkl. {count} Resttage aus dem Vorjahr."
+    }
+  },
+  "time": {
+    "metaTitle": "Zeiterfassung",
+    "page": {
+      "title": "Zeiterfassung",
+      "description": "Erfassen Sie Ihre Arbeitszeit und behalten Sie den Überblick.",
+      "tabToday": "Heute",
+      "tabMonth": "Monatsübersicht",
+      "tabStats": "Statistiken",
+      "dayStatsTitle": "Tages-Statistik",
+      "workTime": "Arbeitszeit",
+      "breakTime": "Pausenzeit",
+      "targetTime": "Soll-Zeit",
+      "delta": "Delta",
+      "statsCardTitle": "Statistiken",
+      "statsPlaceholder1": "Statistiken werden hier angezeigt.",
+      "statsPlaceholder2": "Charts und Auswertungen Ihrer Arbeitszeit."
+    },
+    "clock": {
+      "statusOff": "Nicht eingestempelt",
+      "statusWorking": "Arbeitet",
+      "statusBreak": "Pause",
+      "workedToday": "Arbeitszeit heute",
+      "targetLabel": "Soll:",
+      "deltaLabel": "Delta:",
+      "clockIn": "Kommen",
+      "pause": "Pause",
+      "clockOut": "Gehen",
+      "resume": "Weiter",
+      "remainingBreak": "Restpause erforderlich:",
+      "breakToday": "Pause heute:",
+      "flexBalanceTotal": "Gleitzeit-Saldo gesamt:",
+      "toastIn": "Sie sind jetzt eingestempelt.",
+      "toastOut": "Sie sind jetzt ausgestempelt.",
+      "toastBreakStart": "Pause gestartet. Gute Erholung!",
+      "toastBreakEnd": "Pause beendet. Weiter geht's!"
+    },
+    "entryTypes": {
+      "CLOCK_IN": "Kommen",
+      "CLOCK_OUT": "Gehen",
+      "BREAK_START": "Pause Start",
+      "BREAK_END": "Pause Ende"
+    },
+    "today": {
+      "title": "Heutige Stempelungen",
+      "retry": "Erneut laden",
+      "empty": "Noch keine Stempelungen heute.",
+      "emptyHint": "Stempeln Sie sich ein, um zu beginnen.",
+      "breakToday": "Pause heute",
+      "breakRequired": "Noch {duration} Pause erforderlich",
+      "breakFulfilled": "✓ Pflichtpause von {duration} erfüllt",
+      "requestCorrection": "Korrektur beantragen",
+      "correctionTitle": "Korrektur der Stempelzeit beantragen",
+      "correctionDescription": "Geben Sie die gewünschte Zeit und eine kurze Begründung für die Korrektur an.",
+      "newTime": "Neue Zeit",
+      "reason": "Begründung",
+      "reasonPlaceholder": "z. B. vergessen zu stempeln, falsche Uhrzeit erfasst …",
+      "submitting": "Wird gesendet …",
+      "submitCorrection": "Korrekturantrag senden",
+      "toastCorrectionCreated": "Korrekturantrag erstellt",
+      "toastCorrectionCreatedDesc": "Ihr Antrag wurde zur Prüfung an Ihre Führungskraft bzw. HR gesendet.",
+      "toastCorrectionError": "Antrag konnte nicht erstellt werden.",
+      "toastCorrectionErrorCreate": "Korrekturantrag konnte nicht erstellt werden."
+    },
+    "flexCard": {
+      "title": "Gleitzeit-Saldo",
+      "hoursTotal": "Stunden gesamt",
+      "today": "Heute",
+      "info": "Das Gleitzeit-Saldo zeigt Ihre aufgebauten oder abzubauenden Stunden basierend auf Ihrem Arbeitszeitmodell."
+    },
+    "monthly": {
+      "title": "Monatsübersicht",
+      "today": "Heute",
+      "worked": "Gearbeitet",
+      "target": "Soll",
+      "monthBalance": "Monatssaldo",
+      "flexTotal": "Gleitzeit gesamt",
+      "colDay": "Tag",
+      "colIn": "Kommen",
+      "colOut": "Gehen",
+      "colWorked": "Arbeitszeit",
+      "colTarget": "Soll",
+      "colDelta": "Delta",
+      "legendToday": "Heute",
+      "legendHoliday": "Feiertag",
+      "legendLeave": "Urlaub",
+      "legendWeekend": "Wochenende"
+    }
   }
 }
-

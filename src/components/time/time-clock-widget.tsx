@@ -5,17 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { useTimeTracking } from "@/hooks/use-time-tracking";
-import { Clock, Play, Pause, Square, Coffee, Loader2, AlertCircle } from "lucide-react";
+import { Clock, Play, Square, Coffee, Loader2, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLocale, useTranslations } from "next-intl";
+import { getIntlLocale } from "@/lib/date-fns-locale";
 
 export function TimeClockWidget() {
+  const locale = useLocale();
+  const intlLocale = getIntlLocale(locale);
+  const t = useTranslations("time.clock");
+  const tToast = useTranslations("toast");
   const { status, isLoading, error, clockIn, clockOut, startBreak, endBreak } =
     useTimeTracking();
   const { toast } = useToast();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isClocking, setIsClocking] = useState(false);
 
-  // Update current time every second
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -24,7 +29,7 @@ export function TimeClockWidget() {
   }, []);
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString("de-DE", {
+    return date.toLocaleTimeString(intlLocale, {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
@@ -40,21 +45,18 @@ export function TimeClockWidget() {
     return isNegative ? `-${formatted}` : formatted;
   };
 
-  const handleAction = async (
-    action: () => Promise<void>,
-    successMessage: string
-  ) => {
+  const handleAction = async (action: () => Promise<void>, successMessage: string) => {
     setIsClocking(true);
     try {
       await action();
       toast({
-        title: "Erfolg",
+        title: tToast("successTitle"),
         description: successMessage,
       });
     } catch (err) {
       toast({
-        title: "Fehler",
-        description: err instanceof Error ? err.message : "Unbekannter Fehler",
+        title: tToast("errorTitle"),
+        description: err instanceof Error ? err.message : tToast("unknownError"),
         variant: "destructive",
       });
     } finally {
@@ -62,12 +64,11 @@ export function TimeClockWidget() {
     }
   };
 
-  const handleClockIn = () => handleAction(clockIn, "Sie sind jetzt eingestempelt.");
-  const handleClockOut = () => handleAction(clockOut, "Sie sind jetzt ausgestempelt.");
-  const handleBreakStart = () => handleAction(startBreak, "Pause gestartet. Gute Erholung!");
-  const handleBreakEnd = () => handleAction(endBreak, "Pause beendet. Weiter geht's!");
+  const handleClockIn = () => handleAction(clockIn, t("toastIn"));
+  const handleClockOut = () => handleAction(clockOut, t("toastOut"));
+  const handleBreakStart = () => handleAction(startBreak, t("toastBreakStart"));
+  const handleBreakEnd = () => handleAction(endBreak, t("toastBreakEnd"));
 
-  // Loading State
   if (isLoading) {
     return (
       <Card>
@@ -78,7 +79,6 @@ export function TimeClockWidget() {
     );
   }
 
-  // Error State
   if (error && !status) {
     return (
       <Card className="border-destructive">
@@ -96,7 +96,6 @@ export function TimeClockWidget() {
 
   return (
     <Card className="overflow-hidden">
-      {/* Status Bar */}
       <div
         className={cn(
           "h-2 transition-colors",
@@ -107,7 +106,6 @@ export function TimeClockWidget() {
       />
       <CardContent className="p-6">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-          {/* Time Display */}
           <div className="flex items-center gap-4">
             <div
               className={cn(
@@ -140,25 +138,23 @@ export function TimeClockWidget() {
                   )}
                 />
                 <span className="text-sm text-muted-foreground">
-                  {!isWorking && !isOnBreak && "Nicht eingestempelt"}
-                  {isWorking && "Arbeitet"}
-                  {isOnBreak && "Pause"}
+                  {!isWorking && !isOnBreak && t("statusOff")}
+                  {isWorking && t("statusWorking")}
+                  {isOnBreak && t("statusBreak")}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Elapsed Time */}
           {(isWorking || isOnBreak || workedMinutes > 0) && (
             <div className="text-center lg:text-left">
-              <p className="text-sm text-muted-foreground mb-1">Arbeitszeit heute</p>
+              <p className="text-sm text-muted-foreground mb-1">{t("workedToday")}</p>
               <p className="text-3xl font-bold time-display text-primary">
                 {formatMinutes(workedMinutes)}
               </p>
               {status?.todayTargetMinutes && status.todayTargetMinutes > 0 && (
                 <p className="text-xs text-muted-foreground mt-1">
-                  Soll: {formatMinutes(status.todayTargetMinutes)} · 
-                  Delta:{" "}
+                  {t("targetLabel")} {formatMinutes(status.todayTargetMinutes)} · {t("deltaLabel")}{" "}
                   <span
                     className={cn(
                       "font-medium",
@@ -173,7 +169,6 @@ export function TimeClockWidget() {
             </div>
           )}
 
-          {/* Action Buttons */}
           <div className="flex flex-wrap gap-3">
             {!isWorking && !isOnBreak && (
               <Button
@@ -187,7 +182,7 @@ export function TimeClockWidget() {
                 ) : (
                   <Play className="w-5 h-5 mr-2" />
                 )}
-                Kommen
+                {t("clockIn")}
               </Button>
             )}
 
@@ -205,7 +200,7 @@ export function TimeClockWidget() {
                   ) : (
                     <Coffee className="w-5 h-5 mr-2" />
                   )}
-                  Pause
+                  {t("pause")}
                 </Button>
                 <Button
                   size="lg"
@@ -219,7 +214,7 @@ export function TimeClockWidget() {
                   ) : (
                     <Square className="w-5 h-5 mr-2" />
                   )}
-                  Gehen
+                  {t("clockOut")}
                 </Button>
               </>
             )}
@@ -237,7 +232,7 @@ export function TimeClockWidget() {
                   ) : (
                     <Play className="w-5 h-5 mr-2" />
                   )}
-                  Weiter
+                  {t("resume")}
                 </Button>
                 <Button
                   size="lg"
@@ -251,42 +246,38 @@ export function TimeClockWidget() {
                   ) : (
                     <Square className="w-5 h-5 mr-2" />
                   )}
-                  Gehen
+                  {t("clockOut")}
                 </Button>
               </>
             )}
           </div>
         </div>
 
-        {/* Break & Flex Info */}
         <div className="mt-4 pt-4 border-t space-y-2">
-          {/* Remaining Break Warning */}
           {status?.remainingBreakMinutes !== undefined && status.remainingBreakMinutes > 0 && (
             <div className="flex items-center justify-between text-sm">
               <span className="text-warning flex items-center gap-2">
                 <Coffee className="w-4 h-4" />
-                Restpause erforderlich:
+                {t("remainingBreak")}
               </span>
               <span className="font-medium time-display text-warning">
                 {formatMinutes(status.remainingBreakMinutes)}
               </span>
             </div>
           )}
-          
-          {/* Break taken */}
+
           {status?.todayBreakMinutes !== undefined && status.todayBreakMinutes > 0 && (
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Pause heute:</span>
+              <span className="text-muted-foreground">{t("breakToday")}</span>
               <span className="font-medium time-display">
                 {formatMinutes(status.todayBreakMinutes)}
               </span>
             </div>
           )}
-          
-          {/* Flex Balance */}
+
           {status?.totalFlexBalance !== undefined && status.totalFlexBalance !== 0 && (
             <div className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">Gleitzeit-Saldo gesamt:</span>
+              <span className="text-muted-foreground">{t("flexBalanceTotal")}</span>
               <span
                 className={cn(
                   "font-medium time-display",
