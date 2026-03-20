@@ -1,4 +1,4 @@
-# TimeTracker
+# TimeTime
 
 Self‑hosted time tracking and leave management for small and mid‑sized companies.
 
@@ -57,8 +57,8 @@ Readme was generated with Cursor. Thanks.
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-repo/timetracker.git
-   cd timetracker
+   git clone https://github.com/your-repo/TimeTime.git
+   cd TimeTime
    ```
 
 2. **Install dependencies**
@@ -75,10 +75,10 @@ Readme was generated with Cursor. Thanks.
 4. **Start a local PostgreSQL via Docker (optional)**
    ```bash
    docker run -d \
-     --name timetracker-db \
-     -e POSTGRES_USER=timetracker \
-     -e POSTGRES_PASSWORD=timetracker_secure_password \
-     -e POSTGRES_DB=timetracker \
+     --name TimeTime-db \
+     -e POSTGRES_USER=TimeTime \
+     -e POSTGRES_PASSWORD=TimeTime_secure_password \
+     -e POSTGRES_DB=TimeTime \
      -p 5432:5432 \
      postgres:16-alpine
    ```
@@ -130,26 +130,26 @@ After running `npm run db:seed` you get the following demo accounts:
 
 | Role        | Description   | Email                     | Password   |
 |------------|---------------|---------------------------|------------|
-| Admin (CEO) | Management    | `ceo@timetracker.local`   | `admin123` |
-| Admin (HR)  | HR / People   | `hr@timetracker.local`    | `admin123` |
+| Admin (CEO) | Management    | `ceo@TimeTime.local`   | `admin123` |
+| Admin (HR)  | HR / People   | `hr@TimeTime.local`    | `admin123` |
 
 ### Development department
 
 | Role        | Description                  | Email                        | Password |
 |-------------|------------------------------|------------------------------|----------|
-| Supervisor  | Head of Development          | `lead.dev@timetracker.local` | `user123` |
-| User (FT)   | Developer full‑time          | `anna.dev@timetracker.local` | `user123` |
-| User (PT)   | Developer part‑time          | `ben.dev@timetracker.local`  | `user123` |
-| User (PT)   | Developer part‑time          | `cora.dev@timetracker.local` | `user123` |
+| Supervisor  | Head of Development          | `lead.dev@TimeTime.local` | `user123` |
+| User (FT)   | Developer full‑time          | `anna.dev@TimeTime.local` | `user123` |
+| User (PT)   | Developer part‑time          | `ben.dev@TimeTime.local`  | `user123` |
+| User (PT)   | Developer part‑time          | `cora.dev@TimeTime.local` | `user123` |
 
 ### Sales department
 
 | Role        | Description                  | Email                          | Password |
 |-------------|------------------------------|---------------------------------|----------|
-| Supervisor  | Head of Sales                | `lead.sales@timetracker.local` | `user123` |
-| User (FT)   | Sales full‑time              | `david.sales@timetracker.local`| `user123` |
-| User (PT)   | Sales part‑time              | `eva.sales@timetracker.local`  | `user123` |
-| User (PT)   | Sales part‑time              | `finn.sales@timetracker.local` | `user123` |
+| Supervisor  | Head of Sales                | `lead.sales@TimeTime.local` | `user123` |
+| User (FT)   | Sales full‑time              | `david.sales@TimeTime.local`| `user123` |
+| User (PT)   | Sales part‑time              | `eva.sales@TimeTime.local`  | `user123` |
+| User (PT)   | Sales part‑time              | `finn.sales@TimeTime.local` | `user123` |
 
 **Demo data notes:**
 
@@ -161,7 +161,7 @@ After running `npm run db:seed` you get the following demo accounts:
 ## 📁 Project structure
 
 ```text
-timetracker/
+TimeTime/
 ├── prisma/
 │   ├── schema.prisma      # Database schema
 │   └── seed.ts            # Demo data seeding

@@ -64,6 +64,20 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                 {t("common.documentation")}
               </Button>
             </Link>
+            <a
+              href="https://github.com/gummipunkt/timetime"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block"
+            >
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-purple-200 text-purple-700 hover:bg-purple-50 px-8 py-6 text-lg w-full sm:w-auto"
+              >
+                GitHub
+              </Button>
+            </a>
           </div>
         </div>
 
@@ -167,6 +181,16 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
             <span className="text-lg font-semibold text-gray-800">{t("common.appName")}</span>
           </div>
           <p className="text-sm">{t("landing.footer", { year })}</p>
+          <p className="text-sm mt-2">
+            <a
+              href="https://github.com/gummipunkt/timetime"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-gray-700"
+            >
+              GitHub
+            </a>
+          </p>
         </div>
       </footer>
     </div>

@@ -7,8 +7,8 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 
 export const metadata: Metadata = {
   title: {
-    default: "TimeTracker",
-    template: "%s | TimeTracker",
+    default: "TimeTime",
+    template: "%s | TimeTime",
   },
   description: "Zeiterfassung und Urlaubsverwaltung für Unternehmen",
   icons: {
