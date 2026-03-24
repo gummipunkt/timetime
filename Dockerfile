@@ -6,7 +6,7 @@
 # ============================================
 # Stage 1: Dependencies
 # ============================================
-FROM node:20-alpine AS deps
+FROM node:24.0.0-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
@@ -23,7 +23,7 @@ RUN npx prisma generate
 # ============================================
 # Stage 2: Builder
 # ============================================
-FROM node:20-alpine AS builder
+FROM node:24.0.0-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
@@ -42,7 +42,7 @@ RUN npm run build
 # ============================================
 # Stage 3: Runner (Production)
 # ============================================
-FROM node:20-alpine AS runner
+FROM node:24.0.0-alpine AS runner
 RUN apk add --no-cache openssl
 WORKDIR /app
 
