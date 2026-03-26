@@ -1,0 +1,9 @@
+node_modules
+mobile/node_modules
+.next
+mobile/.expo
+mobile/dist
+coverage
+.git
+.cursor
+*.log
