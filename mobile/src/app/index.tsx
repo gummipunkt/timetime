@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 const apiBase =
   process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, '') ?? 'https://deine-server-url';
 
-export default function App() {
+export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>timetime</Text>
