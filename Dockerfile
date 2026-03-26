@@ -6,12 +6,13 @@
 # ============================================
 # Stage 1: Dependencies
 # ============================================
-FROM node:24.0.0-alpine AS deps
+FROM node:24-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 # Package files kopieren
 COPY package.json package-lock.json* ./
+COPY mobile/package.json ./mobile/package.json
 COPY prisma ./prisma/
 
 # Dependencies installieren
@@ -23,15 +24,15 @@ RUN npx prisma generate
 # ============================================
 # Stage 2: Builder
 # ============================================
-FROM node:24.0.0-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Environment für Build
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
 
 # public-Verzeichnis (falls nicht vorhanden)
 RUN mkdir -p public
@@ -42,12 +43,12 @@ RUN npm run build
 # ============================================
 # Stage 3: Runner (Production)
 # ============================================
-FROM node:24.0.0-alpine AS runner
+FROM node:24-alpine AS runner
 RUN apk add --no-cache openssl
 WORKDIR /app
 
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 # System user erstellen
 RUN addgroup --system --gid 1001 nodejs
@@ -69,8 +70,8 @@ USER nextjs
 
 EXPOSE 3000
 
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
