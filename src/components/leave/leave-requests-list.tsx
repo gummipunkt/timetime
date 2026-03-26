@@ -154,7 +154,9 @@ export function LeaveRequestsList() {
                       {request.totalDays === 1 ? t("list.day") : t("list.days")}
                     </p>
                     {request.reason && (
-                      <p className="text-sm text-muted-foreground mt-1">"{request.reason}"</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        &quot;{request.reason}&quot;
+                      </p>
                     )}
                     {request.rejectionReason && (
                       <p className="text-sm text-destructive mt-1">

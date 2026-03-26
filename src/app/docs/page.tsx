@@ -1,14 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 
 export default function ApiDocsPage() {
   const specUrl = useMemo(() => "/api/openapi", []);
-  const [html, setHtml] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Swagger UI via CDN, damit wir keine extra Dependencies brauchen.
-    const doc = `<!doctype html>
+  const html = useMemo(
+    () => `<!doctype html>
 <html lang="de">
   <head>
     <meta charset="utf-8" />
@@ -32,11 +29,9 @@ export default function ApiDocsPage() {
       });
     </script>
   </body>
-</html>`;
-    setHtml(doc);
-  }, [specUrl]);
-
-  if (!html) return null;
+</html>`,
+    [specUrl]
+  );
 
   return (
     <iframe

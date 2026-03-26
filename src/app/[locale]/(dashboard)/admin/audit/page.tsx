@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -76,42 +76,7 @@ export default function AuditLogPage() {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const limit = 20;
 
-  useEffect(() => {
-    fetchLogs();
-  }, [page, entityFilter, actionFilter, userFilter, performedByFilter]);
-
-  // Wenn Filter wechseln, Pagination zurücksetzen (sonst leere Seite durch Offset)
-  useEffect(() => {
-    setPage(0);
-  }, [entityFilter, actionFilter, userFilter, performedByFilter]);
-
-  // User-Optionen laden (für Filter-Auswahl)
-  useEffect(() => {
-    const loadUsers = async () => {
-      setIsUsersLoading(true);
-      try {
-        const response = await fetch("/api/admin/audit/users");
-        const data = await response.json();
-        if (!response.ok) {
-          throw new Error(data.error || "Fehler beim Laden der Nutzer");
-        }
-        if (data.success) {
-          setUserOptions(data.users || []);
-        } else {
-          throw new Error(data.error || "Unbekannter Fehler");
-        }
-      } catch (e) {
-        console.error("Fetch audit users error:", e);
-        setUserOptions([]);
-      } finally {
-        setIsUsersLoading(false);
-      }
-    };
-
-    loadUsers();
-  }, []);
-
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     setIsLoading(true);
     setFetchError(null);
     try {
@@ -143,7 +108,42 @@ export default function AuditLogPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [actionFilter, entityFilter, limit, page, performedByFilter, userFilter]);
+
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
+
+  // Wenn Filter wechseln, Pagination zurücksetzen (sonst leere Seite durch Offset)
+  useEffect(() => {
+    setPage(0);
+  }, [entityFilter, actionFilter, userFilter, performedByFilter]);
+
+  // User-Optionen laden (für Filter-Auswahl)
+  useEffect(() => {
+    const loadUsers = async () => {
+      setIsUsersLoading(true);
+      try {
+        const response = await fetch("/api/admin/audit/users");
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "Fehler beim Laden der Nutzer");
+        }
+        if (data.success) {
+          setUserOptions(data.users || []);
+        } else {
+          throw new Error(data.error || "Unbekannter Fehler");
+        }
+      } catch (e) {
+        console.error("Fetch audit users error:", e);
+        setUserOptions([]);
+      } finally {
+        setIsUsersLoading(false);
+      }
+    };
+
+    loadUsers();
+  }, []);
 
   const totalPages = Math.ceil(total / limit);
 

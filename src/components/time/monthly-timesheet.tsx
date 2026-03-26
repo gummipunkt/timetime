@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -52,11 +52,7 @@ export function MonthlyTimesheet() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
 
-  useEffect(() => {
-    fetchData();
-  }, [year, month]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`/api/time/summary?year=${year}&month=${month}`);
@@ -71,7 +67,11 @@ export function MonthlyTimesheet() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [month, year]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const formatMinutes = (minutes: number) => {
     const isNegative = minutes < 0;

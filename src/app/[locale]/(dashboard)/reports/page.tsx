@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,11 +54,7 @@ export default function ReportsPage() {
   const [stats, setStats] = useState<MonthStats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetchData();
-  }, [year, month]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -75,7 +71,11 @@ export default function ReportsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [month, year]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const formatMinutes = (minutes: number) => {
     const hours = Math.floor(Math.abs(minutes) / 60);
