@@ -20,7 +20,10 @@
     "postinstall": "prisma generate",
     "dev:mobile": "npm run start -w mobile",
     "mobile:android": "npm run android -w mobile",
-    "mobile:ios": "npm run ios -w mobile"
+    "mobile:ios": "npm run ios -w mobile",
+    "eas:configure": "npx eas-cli build:configure --project-dir mobile",
+    "eas:build:android": "npx eas-cli build --platform android --project-dir mobile",
+    "eas:build:ios": "npx eas-cli build --platform ios --project-dir mobile"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
